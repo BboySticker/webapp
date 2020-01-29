@@ -29,7 +29,9 @@ import javax.sql.DataSource;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/v1/user/self/**")
+            new AntPathRequestMatcher("/v1/user/self/**"),
+            new AntPathRequestMatcher("/v1/bill/**"),
+            new AntPathRequestMatcher("/v1/bills/**")
     );
 
     @Autowired

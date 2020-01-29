@@ -11,7 +11,7 @@ public class TokenController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/token")
+    @GetMapping("/token")
     public String getToken(@RequestParam("username") final String username, @RequestParam("password") final String password){
        String token = userService.login(username, password);
        if(StringUtils.isEmpty(token)){

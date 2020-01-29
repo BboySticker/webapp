@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  pr_check:
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:8-jdk
@@ -12,9 +12,9 @@ jobs:
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    working_directory: ~/repo
+        environment:
+          TEST_DATABASE_URL: mysql://root@localhost/test
+      - image: circleci/mysql:8.0.18
 
     environment:
       # Customize the JVM maximum heap limit
@@ -22,6 +22,8 @@ jobs:
 
     steps:
       - checkout
+
+      - run: mysql???
 
       # Download and cache dependencies
       - restore_cache:

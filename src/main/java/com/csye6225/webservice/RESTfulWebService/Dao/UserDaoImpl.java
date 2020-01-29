@@ -52,23 +52,17 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public User save(User theUser) {
+	public void save(User theUser) {
 		// get current hibernate session
 		Session currentSession = sessionFactory.getCurrentSession();
-
 		// create the user
 		currentSession.saveOrUpdate(theUser);
-
-		return theUser;
 	}
 
 	@Override
 	public User login(String username, String password) {
 
 		User user = findByUsername(username);
-
-		System.out.println(user.getEmail_address());
-		System.out.println(user.getPassword());
 
 		if (user == null) {
 			throw new UserNotFoundException("User not found");
@@ -86,10 +80,12 @@ public class UserDaoImpl implements UserDao {
 	public Optional<User> findByToken(String token) {
 
 		Session currentSession = sessionFactory.getCurrentSession();
+
 		Query<User> theQuery =
 				currentSession.createQuery("from User where token=:uToken", User.class);
 
 		theQuery.setParameter("uToken", token);
+
 		User theUser;
 		try {
 			theUser = theQuery.getSingleResult();

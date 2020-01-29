@@ -11,9 +11,8 @@ import java.util.Date;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private int id;
+    private String id;
 
     @Column(name = "password")
     private String password;
@@ -41,7 +40,8 @@ public class User {
         account_created = new Date();
     }
 
-    public User(String password, String first_name, String last_name, String email_address, Date account_created, Date account_updated, String token) {
+    public User(String id, String password, String first_name, String last_name, String email_address, Date account_created, Date account_updated, String token) {
+        this.id = id;
         this.password = password;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -50,11 +50,11 @@ public class User {
         this.token = token;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -34,7 +34,7 @@ public class CustomizedResponseEntityExceptionHandler
     }
 
     @ExceptionHandler(UserAlreadyExist.class)
-    public final ResponseEntity<Object> handleUserAlreadyExist(UserNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleUserAlreadyExist(UserAlreadyExist ex, WebRequest request) {
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(new Date(), "User Already Exist!", request.getDescription(false));
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
@@ -48,18 +48,42 @@ public class CustomizedResponseEntityExceptionHandler
     }
 
     @ExceptionHandler(FieldRestrictedException.class)
-    public final ResponseEntity<Object> handleFieldRestrictedException(EmailInvalidException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleFieldRestrictedException(FieldRestrictedException ex, WebRequest request) {
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(new Date(), "Fields not allowed to modify; Can only change FirstName, LastName and Password", request.getDescription(false));
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(WeakPasswordException.class)
-    public final ResponseEntity<Object> handleWeakPasswordException(EmailInvalidException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleWeakPasswordException(WeakPasswordException ex, WebRequest request) {
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(new Date(), "Password Too Weak!", request.getDescription(false));
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+
+
+    // handle exceptions related to bills/transactions
+    @ExceptionHandler(BillNotFoundException.class)
+    public final ResponseEntity<Object> handleBillNotFoundException(BillNotFoundException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse =
+                new ExceptionResponse(new Date(), "Bill Not Found!", request.getDescription(false));
+        return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
+    }
+
+    // successfully deleted - 204 - no content
+    @ExceptionHandler(SuccessfullyDeleted.class)
+    public final ResponseEntity<Object> handleSuccessfullyDeleted(SuccessfullyDeleted ex, WebRequest request) {
+        ExceptionResponse exceptionResponse =
+                new ExceptionResponse(new Date(), "Successfully Deleted!", request.getDescription(false));
+        return new ResponseEntity(exceptionResponse, HttpStatus.NO_CONTENT);
+    }
+
+
+
+
+
+
+
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,

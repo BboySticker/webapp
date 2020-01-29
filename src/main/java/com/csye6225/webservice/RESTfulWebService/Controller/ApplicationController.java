@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @RestController
@@ -72,7 +73,8 @@ public class ApplicationController {
         }
 
         // create user account
-        user.setId(0);
+//        user.setId(0);
+        user.setId(UUID.randomUUID().toString());
         user.setAccount_created(new Date());
         User savedUser = userService.save(user);
 

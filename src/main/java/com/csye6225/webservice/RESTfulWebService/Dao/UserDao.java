@@ -12,7 +12,7 @@ public interface UserDao {
 
     User findByUsername(String username);
     
-    User save(User user);
+    void save(User user);
 
     User login(String username, String password);
 

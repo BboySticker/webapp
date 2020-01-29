@@ -2,8 +2,6 @@ package com.csye6225.webservice.RESTfulWebService.Service;
 
 import com.csye6225.webservice.RESTfulWebService.Dao.UserDao;
 import com.csye6225.webservice.RESTfulWebService.Entity.User;
-import com.csye6225.webservice.RESTfulWebService.Exception.EmailInvalidException;
-import com.csye6225.webservice.RESTfulWebService.Validation.EmailValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,11 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 
 @Service
 public class UserServiceImpl implements UserService {

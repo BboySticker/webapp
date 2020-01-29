@@ -8,7 +8,7 @@ public interface BillDao {
 
     Bill findById(String id);
 
-    List<Bill> findAll();
+    List<Bill> findAll(String userId);
 
     void deleteById(String id);
 

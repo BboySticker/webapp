@@ -16,7 +16,6 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Date;
 import java.util.List;
@@ -30,79 +29,119 @@ public class TransactionController {
     @Autowired
     private BillService billService;
 
+    @Autowired
+    private UserService userService;
+
     private Logger logger = Logger.getLogger(getClass().getName());
 
-    // not functional
     @PostMapping("/v1/bill")
-    private void createBill(@RequestBody Bill bill) {
+    private MappingJacksonValue createBill(@RequestBody Bill bill) {
 
-        billService.save(bill);
+        // use helper function to get current authenticated user
+        User currentUser = getCurrentUser();
 
+        // set those read-only attributes: id, createdTs, updatedTs, ownerId
+        bill.setId(UUID.randomUUID().toString());
+        bill.setCreatedTs(new Date());
+        bill.setUpdatedTs(new Date());
+        bill.setOwnerId(currentUser.getId());
+
+        // save the bill
+        Bill savedBill = billService.save(bill);
+
+        return applyFilter(savedBill);
     }
 
-    // functional
     @GetMapping("/v1/bills")
     public MappingJacksonValue getAllBills() {
 
-        List<Bill> bills = billService.findAll();
-
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
-                filterOutAllExcept("id");
-
-        FilterProvider filters = new SimpleFilterProvider().addFilter("BillFilter", filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(bills);
-
-        mapping.setFilters(filters);
-
-        return mapping;
+        User currentUser = getCurrentUser();
+        List<Bill> bills = billService.findAll(currentUser.getId());
+        return applyFilter(bills);
     }
 
-    // functional
     @GetMapping("/v1/bill/{id}")
     private MappingJacksonValue getBill(@PathVariable String id) {
 
+        User currentUser = getCurrentUser();
+
+        // get the bill by id
         Bill theBill = billService.findById(id);
 
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
-                filterOutAllExcept("id", "created_ts", "updated_ts");
-
-        FilterProvider filters = new SimpleFilterProvider().addFilter("BillFilter", filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(theBill);
-
-        mapping.setFilters(filters);
-
-        return mapping;
-
+        if (theBill == null || ! theBill.getOwnerId().equals(currentUser.getId())) {
+            throw new BillNotFoundException("Bill Not Found!");
+        }
+        return applyFilter(theBill);
     }
 
     @DeleteMapping("/v1/bill/{id}")
     private void deleteBill(@PathVariable String id) {
 
+        User currentUser = getCurrentUser();
+
         logger.info("Deleting the item which id: " + id);
 
         Bill theBill = billService.findById(id);
 
-        if (theBill == null) {
+        // throw exception when:
+        // 1. passed id not exist;
+        // 2. ownerId field in bill object is null;
+        // 3. bill's ownerId is not equal to currentUser's id
+        if (theBill == null || theBill.getOwnerId() == null ||
+                ! theBill.getOwnerId().equals(currentUser.getId())) {
             throw new BillNotFoundException("Bill Not Found!");
         }
-
         billService.deleteById(id);
 
         throw new SuccessfullyDeleted("Successfully Deleted!");
-
     }
 
     @PutMapping("/v1/bill/{id}")
     private MappingJacksonValue updateBill(@RequestBody Bill bill, @PathVariable String id) {
 
+        User currentUser = getCurrentUser();
+
+        Bill theBill = billService.findById(id);
+
+        if (theBill == null || ! currentUser.getId().equals(theBill.getOwnerId())) {
+            throw new BillNotFoundException("Bill Not Found!");
+        }
+
+        // pass those four read-only fields
         bill.setId(id);
+        bill.setCreatedTs(theBill.getCreatedTs());
+        bill.setUpdatedTs(new Date());
+        bill.setOwnerId(theBill.getOwnerId());
 
         billService.save(bill);
 
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
-                filterOutAllExcept("id");
+        return applyFilter(bill);
+    }
+
+    // helper function to get current authenticated user
+    private User getCurrentUser() {
+
+        // Get current authenticated user
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User user = userService.findByUsername(username);
+
+        logger.info("Successfully obtained user: " + username);
+
+        if (user == null) {
+            throw new UserNotFoundException("User Not Found!");
+        }
+
+        return user;
+    }
+
+    // two helper function, apply filter on Bill object to filter out those sensitive attributes
+    private MappingJacksonValue applyFilter(Bill bill) {
+
+        SimpleBeanPropertyFilter filter =
+                SimpleBeanPropertyFilter.filterOutAllExcept(
+                        "id", "createdTs", "updatedTs", "ownerId", "vendor",
+                        "billDate", "dueDate", "amountDue", "categories", "paymentStatus");
 
         FilterProvider filters = new SimpleFilterProvider().addFilter("BillFilter", filter);
 
@@ -111,7 +150,22 @@ public class TransactionController {
         mapping.setFilters(filters);
 
         return mapping;
+    }
 
+    private MappingJacksonValue applyFilter(List<Bill> bills) {
+
+        SimpleBeanPropertyFilter filter =
+                SimpleBeanPropertyFilter.filterOutAllExcept(
+                        "id", "createdTs", "updatedTs", "ownerId", "vendor",
+                        "billDate", "dueDate", "amountDue", "categories", "paymentStatus");
+
+        FilterProvider filters = new SimpleFilterProvider().addFilter("BillFilter", filter);
+
+        MappingJacksonValue mapping = new MappingJacksonValue(bills);
+
+        mapping.setFilters(filters);
+
+        return mapping;
     }
 
 }

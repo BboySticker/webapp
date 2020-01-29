@@ -25,22 +25,24 @@ public class BillDaoImpl implements BillDao {
         Bill theBill = currentSession.get(Bill.class, id);
 
         return theBill;
-
     }
 
     @Override
-    public List<Bill> findAll() {
+    public List<Bill> findAll(String userId) {
 
         Session currentSession = sessionFactory.getCurrentSession();
 
         // now retrieve/read from database using username
         Query<Bill> theQuery =
-                currentSession.createQuery("from Bill", Bill.class);
+                currentSession.createQuery("from Bill where owner_id=:uId", Bill.class);
+
+        theQuery.setParameter("uId", userId);
 
         List<Bill> users = theQuery.getResultList();
 
-        return users;
+        //TODO: add exception handling???
 
+        return users;
     }
 
     // functional

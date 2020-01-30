@@ -37,6 +37,9 @@ public class TransactionController {
     @PostMapping("/v1/bill")
     private MappingJacksonValue createBill(@RequestBody Bill bill) {
 
+        System.out.println(bill.getCategories());
+        System.out.println(bill.getPaymentStatus());
+
         // use helper function to get current authenticated user
         User currentUser = getCurrentUser();
 

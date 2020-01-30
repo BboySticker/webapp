@@ -54,12 +54,24 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
         auth.authenticationProvider(provider);
+
+        // use jdbc authentication and provide datasource
 //        auth.jdbcAuthentication().dataSource(securityDataSource);
+
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+//        http
+//                .authorizeRequests()
+//                .requestMatchers(PROTECTED_URLS)
+//                .authenticated()
+//                .and()
+//                .csrf().disable()
+//                .httpBasic();
 
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

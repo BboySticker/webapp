@@ -1,17 +1,33 @@
 package com.csye6225.webservice.RESTfulWebService.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "bill")
 @JsonFilter("BillFilter")
 public class Bill {
+
+    private enum PaymentStatus{
+        paid("paid"),
+        due("due"),
+        past_due("past_due"),
+        no_payment_required("no_payment_required");
+
+        private String value;
+        private PaymentStatus(String value){
+            this.value = value;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
 
     @Id
     @Column(name = "id")
@@ -38,16 +54,19 @@ public class Bill {
     @Column(name = "amount_due")
     private double amountDue;
 
+    @ElementCollection
+//    @JsonIgnore
     @Column(name = "categories")
-    private String categories;
+    private List<String> categories = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")
-    private String paymentStatus;
+    private PaymentStatus paymentStatus;
 
     public Bill() {
     }
 
-    public Bill(String id, Date createdTs, Date updatedTs, String ownerId, String vendor, Date billDate, Date dueDate, double amountDue, String categories, String paymentStatus) {
+    public Bill(String id, Date createdTs, Date updatedTs, String ownerId, String vendor, Date billDate, Date dueDate, double amountDue, List<String> categories, PaymentStatus paymentStatus) {
         this.id = id;
         this.createdTs = createdTs;
         this.updatedTs = updatedTs;
@@ -124,19 +143,19 @@ public class Bill {
         this.amountDue = amountDue;
     }
 
-    public String getCategories() {
+    public List<String> getCategories() {
         return categories;
     }
 
-    public void setCategories(String categories) {
+    public void setCategories(List<String> categories) {
         this.categories = categories;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(String paymentStatus) {
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
 

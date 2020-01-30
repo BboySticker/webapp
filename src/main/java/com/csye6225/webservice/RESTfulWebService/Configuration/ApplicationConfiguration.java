@@ -34,7 +34,6 @@ public class ApplicationConfiguration {
     @Bean
     public DataSource securityDataSource() {
 
-        
         // create a connection pool
         ComboPooledDataSource securityDataSource = new ComboPooledDataSource();
 
@@ -45,7 +44,7 @@ public class ApplicationConfiguration {
             throw new RuntimeException(exc);
         }
 
-        // log the connection props
+        // log the connection  props
         logger.info(">>> jdbc.url=" + env.getProperty("jdbc.url"));
         logger.info(">>> jdbc.user=" + env.getProperty("jdbc.user"));
 

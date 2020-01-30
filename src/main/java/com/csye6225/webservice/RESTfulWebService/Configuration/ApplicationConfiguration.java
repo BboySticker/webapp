@@ -34,6 +34,7 @@ public class ApplicationConfiguration {
     @Bean
     public DataSource securityDataSource() {
 
+        
         // create a connection pool
         ComboPooledDataSource securityDataSource = new ComboPooledDataSource();
 

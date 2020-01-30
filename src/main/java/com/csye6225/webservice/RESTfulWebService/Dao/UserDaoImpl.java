@@ -68,8 +68,7 @@ public class UserDaoImpl implements UserDao {
 			throw new UserNotFoundException("User not found");
 		}
 
-//		if (passwordEncoder.matches(user.getPassword(), password)) {
-		if (user.getPassword().equals(password)) {
+		if (passwordEncoder.matches(password, user.getPassword())) {
 			return user;
 		} else {
 			return null;

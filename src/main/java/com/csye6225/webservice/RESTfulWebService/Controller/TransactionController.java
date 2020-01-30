@@ -4,7 +4,6 @@ package com.csye6225.webservice.RESTfulWebService.Controller;
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
 import com.csye6225.webservice.RESTfulWebService.Entity.User;
 import com.csye6225.webservice.RESTfulWebService.Exception.BillNotFoundException;
-import com.csye6225.webservice.RESTfulWebService.Exception.SuccessfullyDeleted;
 import com.csye6225.webservice.RESTfulWebService.Exception.UserNotFoundException;
 import com.csye6225.webservice.RESTfulWebService.Service.BillService;
 import com.csye6225.webservice.RESTfulWebService.Service.UserService;
@@ -12,6 +11,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +35,7 @@ public class TransactionController {
     private Logger logger = Logger.getLogger(getClass().getName());
 
     @PostMapping("/v1/bill")
+    @ResponseStatus(HttpStatus.CREATED)
     private MappingJacksonValue createBill(@RequestBody Bill bill) {
 
         System.out.println(bill.getCategories());
@@ -78,6 +79,7 @@ public class TransactionController {
     }
 
     @DeleteMapping("/v1/bill/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     private void deleteBill(@PathVariable String id) {
 
         User currentUser = getCurrentUser();
@@ -95,8 +97,6 @@ public class TransactionController {
             throw new BillNotFoundException("Bill Not Found!");
         }
         billService.deleteById(id);
-
-        throw new SuccessfullyDeleted("Successfully Deleted!");
     }
 
     @PutMapping("/v1/bill/{id}")

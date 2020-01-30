@@ -40,17 +40,6 @@ public class BillDaoImpl implements BillDao {
 
         List<Bill> bills = theQuery.getResultList();
 
-//        for (Bill bill: bills) {
-//            Query<String> newQuery =
-//                    currentSession.createQuery("from Bill_categories where Bill_id=:billId", String.class);
-//
-//            newQuery.setParameter("billId", bill.getId());
-//
-//            bill.setCategories(newQuery.getResultList());
-//        }
-
-        //TODO: add exception handling???
-
         return bills;
     }
 

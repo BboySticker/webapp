@@ -36,7 +36,7 @@ public class TransactionController {
 
     @PostMapping("/v1/bill")
     @ResponseStatus(HttpStatus.CREATED)
-    private MappingJacksonValue createBill(@RequestBody Bill bill) {
+    private @ResponseBody Bill createBill(@RequestBody Bill bill) {
 
         System.out.println(bill.getCategories());
         System.out.println(bill.getPaymentStatus());
@@ -53,19 +53,20 @@ public class TransactionController {
         // save the bill
         Bill savedBill = billService.save(bill);
 
-        return applyFilter(savedBill);
+//        return applyFilter(savedBill);
+        return savedBill;
     }
 
     @GetMapping("/v1/bills")
-    public MappingJacksonValue getAllBills() {
+    public @ResponseBody List<Bill> getAllBills() {
 
         User currentUser = getCurrentUser();
         List<Bill> bills = billService.findAll(currentUser.getId());
-        return applyFilter(bills);
+        return bills;
     }
 
     @GetMapping("/v1/bill/{id}")
-    private MappingJacksonValue getBill(@PathVariable String id) {
+    private Bill getBill(@PathVariable String id) {
 
         User currentUser = getCurrentUser();
 
@@ -75,7 +76,8 @@ public class TransactionController {
         if (theBill == null || ! theBill.getOwnerId().equals(currentUser.getId())) {
             throw new BillNotFoundException("Bill Not Found!");
         }
-        return applyFilter(theBill);
+//        return applyFilter(theBill);
+        return theBill;
     }
 
     @DeleteMapping("/v1/bill/{id}")
@@ -100,7 +102,7 @@ public class TransactionController {
     }
 
     @PutMapping("/v1/bill/{id}")
-    private MappingJacksonValue updateBill(@RequestBody Bill bill, @PathVariable String id) {
+    private @ResponseBody Bill updateBill(@RequestBody Bill bill, @PathVariable String id) {
 
         User currentUser = getCurrentUser();
 
@@ -118,7 +120,8 @@ public class TransactionController {
 
         billService.save(bill);
 
-        return applyFilter(bill);
+//        return applyFilter(bill);
+        return bill;
     }
 
     // helper function to get current authenticated user

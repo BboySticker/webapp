@@ -2,7 +2,6 @@ package com.csye6225.webservice.RESTfulWebService.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "bill")
-@JsonFilter("BillFilter")
+//@JsonFilter("BillFilter")
 public class Bill {
 
     private enum PaymentStatus{
@@ -54,8 +53,7 @@ public class Bill {
     @Column(name = "amount_due")
     private double amountDue;
 
-    @ElementCollection
-//    @JsonIgnore
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "categories")
     private List<String> categories = new ArrayList<>();
 

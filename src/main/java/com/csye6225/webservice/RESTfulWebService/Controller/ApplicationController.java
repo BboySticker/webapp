@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,6 +50,7 @@ public class ApplicationController {
     }
 
     @PostMapping("/v1/user")
+    @ResponseStatus(HttpStatus.CREATED)
     public MappingJacksonValue createUser(@RequestBody User user) {
 
         String username = user.getEmail_address();
@@ -72,14 +74,11 @@ public class ApplicationController {
             throw new UserAlreadyExist("Username already exist!");
         }
 
-        // create user account
-//        user.setId(0);
         user.setId(UUID.randomUUID().toString());
         user.setAccount_created(new Date());
         User savedUser = userService.save(user);
 
-        logger.info("Successfully created user: " + username);
-
+        // set basic filter, avoid returning sensitive info such as password
         SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
                 filterOutAllExcept("id", "first_name", "last_name", "email_address", "account_created", "account_updated");
 
@@ -120,9 +119,10 @@ public class ApplicationController {
     }
 
     @PutMapping("/v1/user/self")
-    public MappingJacksonValue update(@RequestBody User user) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@RequestBody User user) {
 
-        if (!user.getEmail_address().isEmpty()
+        if (user.getEmail_address() != null
                 || user.getAccount_created() != null
                 || user.getAccount_updated() != null) {
             throw new FieldRestrictedException("Fields not allowed to modify; " +
@@ -130,7 +130,6 @@ public class ApplicationController {
         }
 
         String password = user.getPassword();
-        System.out.println(password);
         if (password != null && (password.length() < 8 || !passwordValidator.isValid(password))) {
             throw new WeakPasswordException("Password Too Weak!");
         }
@@ -141,26 +140,14 @@ public class ApplicationController {
 
         User old = userService.findByUsername(username);
 
-        // cannot change attributes except first_name, last_name and password
+        // pass those static attributes
         user.setId(old.getId());
         user.setEmail_address(old.getEmail_address());
         user.setAccount_created(old.getAccount_created());
         user.setToken(old.getToken());
 
         // save the composed user
-        User savedUser = userService.save(user);
-
-        // set basic filter, avoid returning sensitive info such as password
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
-                filterOutAllExcept("id", "first_name", "last_name", "email_address", "account_created", "account_updated");
-
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(savedUser);
-
-        mapping.setFilters(filters);
-
-        return mapping;
+        userService.save(user);
     }
 
 }

@@ -54,15 +54,19 @@ public class UserServiceImpl implements UserService {
 		// assign user details to the user object
 		savedUser.setId(user.getId());
 
-//		savedUser.setPassword("{bcrypt}" + passwordEncoder.encode(user.getPassword()));
-		savedUser.setPassword(user.getPassword());
+		savedUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
 		savedUser.setFirst_name(user.getFirst_name());
 		savedUser.setLast_name(user.getLast_name());
 
 		savedUser.setEmail_address(user.getEmail_address());
 
-		savedUser.setAccount_created(user.getAccount_created());
+		if (user.getAccount_created() == null) {
+			savedUser.setAccount_created(new Date());
+		} else {
+			savedUser.setAccount_created(user.getAccount_created());
+		}
+
 		savedUser.setAccount_updated(new Date());
 
 		savedUser.setToken(user.getToken());

@@ -37,7 +37,6 @@ public class User {
 
 
     public User() {
-        account_created = new Date();
     }
 
     public User(String id, String password, String first_name, String last_name, String email_address, Date account_created, Date account_updated, String token) {

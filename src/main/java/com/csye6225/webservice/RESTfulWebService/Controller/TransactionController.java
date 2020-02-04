@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -46,14 +48,16 @@ public class TransactionController {
 
         // set those read-only attributes: id, createdTs, updatedTs, ownerId
         bill.setId(UUID.randomUUID().toString());
-        bill.setCreatedTs(new Date());
-        bill.setUpdatedTs(new Date());
+
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+        bill.setCreatedTs(dateFormat.format(new Date()));
+        bill.setUpdatedTs(dateFormat.format(new Date()));
+
         bill.setOwnerId(currentUser.getId());
 
         // save the bill
         Bill savedBill = billService.save(bill);
 
-//        return applyFilter(savedBill);
         return savedBill;
     }
 
@@ -76,7 +80,6 @@ public class TransactionController {
         if (theBill == null || ! theBill.getOwnerId().equals(currentUser.getId())) {
             throw new BillNotFoundException("Bill Not Found!");
         }
-//        return applyFilter(theBill);
         return theBill;
     }
 
@@ -115,12 +118,14 @@ public class TransactionController {
         // pass those four read-only fields
         bill.setId(id);
         bill.setCreatedTs(theBill.getCreatedTs());
-        bill.setUpdatedTs(new Date());
+
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+        bill.setUpdatedTs(dateFormat.format(new Date()));
+
         bill.setOwnerId(theBill.getOwnerId());
 
         billService.save(bill);
 
-//        return applyFilter(bill);
         return bill;
     }
 

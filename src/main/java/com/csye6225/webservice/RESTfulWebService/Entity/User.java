@@ -27,26 +27,21 @@ public class User {
     private String email_address;
 
     @Column(name = "account_created")
-    private Date account_created;
+    private String account_created;
 
     @Column(name = "account_updated")
-    private Date account_updated;
-
-    @Column(name = "token")
-    private String token;
-
+    private String account_updated;
 
     public User() {
     }
 
-    public User(String id, String password, String first_name, String last_name, String email_address, Date account_created, Date account_updated, String token) {
+    public User(String id, String password, String first_name, String last_name, String email_address, String account_created, String account_updated) {
         this.id = id;
         this.password = password;
         this.first_name = first_name;
         this.last_name = last_name;
         this.email_address = email_address;
         this.account_updated = account_updated;
-        this.token = token;
     }
 
     public String getId() {
@@ -89,28 +84,20 @@ public class User {
         this.email_address = email_address;
     }
 
-    public Date getAccount_created() {
+    public String getAccount_created() {
         return account_created;
     }
 
-    public void setAccount_created(Date account_created) {
+    public void setAccount_created(String account_created) {
         this.account_created = account_created;
     }
 
-    public Date getAccount_updated() {
+    public String getAccount_updated() {
         return account_updated;
     }
 
-    public void setAccount_updated(Date account_updated) {
+    public void setAccount_updated(String account_updated) {
         this.account_updated = account_updated;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     @Override
@@ -123,7 +110,6 @@ public class User {
                 ", email_address='" + email_address + '\'' +
                 ", account_created=" + account_created +
                 ", account_updated=" + account_updated +
-                ", token='" + token + '\'' +
                 '}';
     }
 }

@@ -10,10 +10,6 @@ import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
 
-    String login(String username, String password) throws HttpClientErrorException.BadRequest;
-
-    Optional<org.springframework.security.core.userdetails.User> findByToken(String token);
-
     List<User> findAll();
 
     User findByUsername(String username);

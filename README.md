@@ -3,11 +3,13 @@ Repo for CSYE6225 Cloud Computing.
 
 # Prerequisites:
 
-Programming Language: Java 8
+Programming Language: Java 12
 
 Frameworks: Spring-Boot, Spring-Security
 
 IDE: IntelliJ IDEA
+
+vbnm,
 
 Server: Tomcat 9
 

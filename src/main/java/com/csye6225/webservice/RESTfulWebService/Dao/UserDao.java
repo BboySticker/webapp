@@ -14,7 +14,4 @@ public interface UserDao {
     
     void save(User user);
 
-    User login(String username, String password);
-
-    Optional<User> findByToken(String token);
 }

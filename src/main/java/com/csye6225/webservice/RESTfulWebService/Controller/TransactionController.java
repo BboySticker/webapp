@@ -4,7 +4,6 @@ package com.csye6225.webservice.RESTfulWebService.Controller;
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
 import com.csye6225.webservice.RESTfulWebService.Entity.User;
 import com.csye6225.webservice.RESTfulWebService.Exception.BillNotFoundException;
-import com.csye6225.webservice.RESTfulWebService.Exception.SuccessfullyDeleted;
 import com.csye6225.webservice.RESTfulWebService.Exception.UserNotFoundException;
 import com.csye6225.webservice.RESTfulWebService.Service.BillService;
 import com.csye6225.webservice.RESTfulWebService.Service.UserService;
@@ -12,11 +11,14 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -35,33 +37,40 @@ public class TransactionController {
     private Logger logger = Logger.getLogger(getClass().getName());
 
     @PostMapping("/v1/bill")
-    private MappingJacksonValue createBill(@RequestBody Bill bill) {
+    @ResponseStatus(HttpStatus.CREATED)
+    private @ResponseBody Bill createBill(@RequestBody Bill bill) {
+
+        System.out.println(bill.getCategories());
+        System.out.println(bill.getPaymentStatus());
 
         // use helper function to get current authenticated user
         User currentUser = getCurrentUser();
 
         // set those read-only attributes: id, createdTs, updatedTs, ownerId
         bill.setId(UUID.randomUUID().toString());
-        bill.setCreatedTs(new Date());
-        bill.setUpdatedTs(new Date());
+
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+        bill.setCreatedTs(dateFormat.format(new Date()));
+        bill.setUpdatedTs(dateFormat.format(new Date()));
+
         bill.setOwnerId(currentUser.getId());
 
         // save the bill
         Bill savedBill = billService.save(bill);
 
-        return applyFilter(savedBill);
+        return savedBill;
     }
 
     @GetMapping("/v1/bills")
-    public MappingJacksonValue getAllBills() {
+    public @ResponseBody List<Bill> getAllBills() {
 
         User currentUser = getCurrentUser();
         List<Bill> bills = billService.findAll(currentUser.getId());
-        return applyFilter(bills);
+        return bills;
     }
 
     @GetMapping("/v1/bill/{id}")
-    private MappingJacksonValue getBill(@PathVariable String id) {
+    private Bill getBill(@PathVariable String id) {
 
         User currentUser = getCurrentUser();
 
@@ -71,10 +80,11 @@ public class TransactionController {
         if (theBill == null || ! theBill.getOwnerId().equals(currentUser.getId())) {
             throw new BillNotFoundException("Bill Not Found!");
         }
-        return applyFilter(theBill);
+        return theBill;
     }
 
     @DeleteMapping("/v1/bill/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     private void deleteBill(@PathVariable String id) {
 
         User currentUser = getCurrentUser();
@@ -92,12 +102,10 @@ public class TransactionController {
             throw new BillNotFoundException("Bill Not Found!");
         }
         billService.deleteById(id);
-
-        throw new SuccessfullyDeleted("Successfully Deleted!");
     }
 
     @PutMapping("/v1/bill/{id}")
-    private MappingJacksonValue updateBill(@RequestBody Bill bill, @PathVariable String id) {
+    private @ResponseBody Bill updateBill(@RequestBody Bill bill, @PathVariable String id) {
 
         User currentUser = getCurrentUser();
 
@@ -110,12 +118,15 @@ public class TransactionController {
         // pass those four read-only fields
         bill.setId(id);
         bill.setCreatedTs(theBill.getCreatedTs());
-        bill.setUpdatedTs(new Date());
+
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+        bill.setUpdatedTs(dateFormat.format(new Date()));
+
         bill.setOwnerId(theBill.getOwnerId());
 
         billService.save(bill);
 
-        return applyFilter(bill);
+        return bill;
     }
 
     // helper function to get current authenticated user

@@ -70,18 +70,6 @@ public class CustomizedResponseEntityExceptionHandler
         return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
-    // successfully deleted - 204 - no content
-    @ExceptionHandler(SuccessfullyDeleted.class)
-    public final ResponseEntity<Object> handleSuccessfullyDeleted(SuccessfullyDeleted ex, WebRequest request) {
-        ExceptionResponse exceptionResponse =
-                new ExceptionResponse(new Date(), "Successfully Deleted!", request.getDescription(false));
-        return new ResponseEntity(exceptionResponse, HttpStatus.NO_CONTENT);
-    }
-
-
-
-
-
 
 
 

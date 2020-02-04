@@ -4,7 +4,37 @@
 #
 version: 2
 jobs:
+  pr_check:
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:8-jdk
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+
+      # run tests!
+      - run: mvn integration-test
+
+
   build:
+    filter:
+      branch:
+        only:
+          - master
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:8-jdk
@@ -41,3 +71,19 @@ jobs:
 
       # run tests!
       - run: mvn integration-test
+
+workflows:
+  version: 2
+  pr-check-workflow:
+    jobs:
+      - pr_check
+  build-deploy-workflow:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+      
+      
+      

@@ -38,11 +38,9 @@ public class BillDaoImpl implements BillDao {
 
         theQuery.setParameter("uId", userId);
 
-        List<Bill> users = theQuery.getResultList();
+        List<Bill> bills = theQuery.getResultList();
 
-        //TODO: add exception handling???
-
-        return users;
+        return bills;
     }
 
     // functional

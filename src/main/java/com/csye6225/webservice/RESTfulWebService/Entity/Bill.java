@@ -1,27 +1,42 @@
 package com.csye6225.webservice.RESTfulWebService.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "bill")
-@JsonFilter("BillFilter")
+//@JsonFilter("BillFilter")
 public class Bill {
+
+    private enum PaymentStatus{
+        paid("paid"),
+        due("due"),
+        past_due("past_due"),
+        no_payment_required("no_payment_required");
+
+        private String value;
+        private PaymentStatus(String value){
+            this.value = value;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
 
     @Id
     @Column(name = "id")
     private String id;  // read-only
 
     @Column(name = "created_ts")
-    private Date createdTs;  // read-only
+    private String createdTs;  // read-only
 
     @Column(name = "updated_ts")
-    private Date updatedTs;  // read-only
+    private String updatedTs;  // read-only
 
     @Column(name = "owner_id")
     private String ownerId;  // read-only
@@ -30,24 +45,26 @@ public class Bill {
     private String vendor;
 
     @Column(name = "bill_date")
-    private Date billDate;
+    private String billDate;
 
     @Column(name = "due_date")
-    private Date dueDate;
+    private String dueDate;
 
     @Column(name = "amount_due")
     private double amountDue;
 
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "categories")
-    private String categories;
+    private List<String> categories = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")
-    private String paymentStatus;
+    private PaymentStatus paymentStatus;
 
     public Bill() {
     }
 
-    public Bill(String id, Date createdTs, Date updatedTs, String ownerId, String vendor, Date billDate, Date dueDate, double amountDue, String categories, String paymentStatus) {
+    public Bill(String id, String createdTs, String updatedTs, String ownerId, String vendor, String billDate, String dueDate, double amountDue, List<String> categories, PaymentStatus paymentStatus) {
         this.id = id;
         this.createdTs = createdTs;
         this.updatedTs = updatedTs;
@@ -68,19 +85,19 @@ public class Bill {
         this.id = id;
     }
 
-    public Date getCreatedTs() {
+    public String getCreatedTs() {
         return createdTs;
     }
 
-    public void setCreatedTs(Date createdTs) {
+    public void setCreatedTs(String createdTs) {
         this.createdTs = createdTs;
     }
 
-    public Date getUpdatedTs() {
+    public String getUpdatedTs() {
         return updatedTs;
     }
 
-    public void setUpdatedTs(Date updatedTs) {
+    public void setUpdatedTs(String updatedTs) {
         this.updatedTs = updatedTs;
     }
 
@@ -100,19 +117,19 @@ public class Bill {
         this.vendor = vendor;
     }
 
-    public Date getBillDate() {
+    public String getBillDate() {
         return billDate;
     }
 
-    public void setBillDate(Date billDate) {
+    public void setBillDate(String billDate) {
         this.billDate = billDate;
     }
 
-    public Date getDueDate() {
+    public String getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -124,19 +141,19 @@ public class Bill {
         this.amountDue = amountDue;
     }
 
-    public String getCategories() {
+    public List<String> getCategories() {
         return categories;
     }
 
-    public void setCategories(String categories) {
+    public void setCategories(List<String> categories) {
         this.categories = categories;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(String paymentStatus) {
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
 

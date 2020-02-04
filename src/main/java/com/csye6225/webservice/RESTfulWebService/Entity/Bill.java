@@ -33,10 +33,10 @@ public class Bill {
     private String id;  // read-only
 
     @Column(name = "created_ts")
-    private Date createdTs;  // read-only
+    private String createdTs;  // read-only
 
     @Column(name = "updated_ts")
-    private Date updatedTs;  // read-only
+    private String updatedTs;  // read-only
 
     @Column(name = "owner_id")
     private String ownerId;  // read-only
@@ -45,10 +45,10 @@ public class Bill {
     private String vendor;
 
     @Column(name = "bill_date")
-    private Date billDate;
+    private String billDate;
 
     @Column(name = "due_date")
-    private Date dueDate;
+    private String dueDate;
 
     @Column(name = "amount_due")
     private double amountDue;
@@ -64,7 +64,7 @@ public class Bill {
     public Bill() {
     }
 
-    public Bill(String id, Date createdTs, Date updatedTs, String ownerId, String vendor, Date billDate, Date dueDate, double amountDue, List<String> categories, PaymentStatus paymentStatus) {
+    public Bill(String id, String createdTs, String updatedTs, String ownerId, String vendor, String billDate, String dueDate, double amountDue, List<String> categories, PaymentStatus paymentStatus) {
         this.id = id;
         this.createdTs = createdTs;
         this.updatedTs = updatedTs;
@@ -85,19 +85,19 @@ public class Bill {
         this.id = id;
     }
 
-    public Date getCreatedTs() {
+    public String getCreatedTs() {
         return createdTs;
     }
 
-    public void setCreatedTs(Date createdTs) {
+    public void setCreatedTs(String createdTs) {
         this.createdTs = createdTs;
     }
 
-    public Date getUpdatedTs() {
+    public String getUpdatedTs() {
         return updatedTs;
     }
 
-    public void setUpdatedTs(Date updatedTs) {
+    public void setUpdatedTs(String updatedTs) {
         this.updatedTs = updatedTs;
     }
 
@@ -117,19 +117,19 @@ public class Bill {
         this.vendor = vendor;
     }
 
-    public Date getBillDate() {
+    public String getBillDate() {
         return billDate;
     }
 
-    public void setBillDate(Date billDate) {
+    public void setBillDate(String billDate) {
         this.billDate = billDate;
     }
 
-    public Date getDueDate() {
+    public String getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
     }
 

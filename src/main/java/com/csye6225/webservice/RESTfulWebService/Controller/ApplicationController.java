@@ -8,13 +8,14 @@ import com.csye6225.webservice.RESTfulWebService.Validation.PasswordValidator;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -23,8 +24,7 @@ import java.util.logging.Logger;
 @RestController
 public class ApplicationController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     private EmailValidator emailValidator = new EmailValidator();
 
@@ -32,13 +32,18 @@ public class ApplicationController {
 
     private Logger logger = Logger.getLogger(getClass().getName());
 
+    public ApplicationController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping("/users")
     public MappingJacksonValue findAll() {
 
         List<User> users = userService.findAll();
 
         SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
-                filterOutAllExcept("id", "username", "first_name", "last_name", "email", "account_created", "account_updated");
+                filterOutAllExcept("id", "username", "first_name", "last_name",
+                        "email", "account_created", "account_updated");
 
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
 
@@ -55,11 +60,13 @@ public class ApplicationController {
 
         String username = user.getEmail_address();
 
+        // check whether the username is valid
         if (!emailValidator.isValid(username, null)) {
             logger.warning("Invalid email!");
             throw new EmailInvalidException("Invalid email!");
         }
 
+        // check whether the password is strong
         String password = user.getPassword();
         if (password.length() < 8 || !passwordValidator.isValid(password)) {
             throw new WeakPasswordException("Password Too Weak!");
@@ -74,13 +81,16 @@ public class ApplicationController {
             throw new UserAlreadyExist("Username already exist!");
         }
 
-        user.setId(UUID.randomUUID().toString());
-        user.setAccount_created(new Date());
+        // set user attributes
+        user.setId(UUID.randomUUID().toString());  // user id
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");  // set the date format
+        user.setAccount_created(dateFormat.format(new Date()));
         User savedUser = userService.save(user);
 
         // set basic filter, avoid returning sensitive info such as password
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
-                filterOutAllExcept("id", "first_name", "last_name", "email_address", "account_created", "account_updated");
+        SimpleBeanPropertyFilter filter =
+                SimpleBeanPropertyFilter.filterOutAllExcept("id", "first_name", "last_name",
+                        "email_address", "account_created", "account_updated");
 
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
 
@@ -94,20 +104,11 @@ public class ApplicationController {
     @GetMapping("/v1/user/self")
     public MappingJacksonValue findOne() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = getCurrentUser();
 
-        String username = auth.getName();
-
-        logger.info("Successfully obtained user: " + username);
-
-        User user = userService.findByUsername(username);
-
-        if (user == null) {
-            throw new UserNotFoundException("User Not Found!");
-        }
-
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
-                filterOutAllExcept("id", "first_name", "last_name", "email_address", "account_created", "account_updated");
+        SimpleBeanPropertyFilter filter =
+                SimpleBeanPropertyFilter.filterOutAllExcept("id", "first_name", "last_name",
+                        "email_address", "account_created", "account_updated");
 
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
 
@@ -134,20 +135,32 @@ public class ApplicationController {
             throw new WeakPasswordException("Password Too Weak!");
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        String username = auth.getName();
-
-        User old = userService.findByUsername(username);
+        User old = getCurrentUser();
 
         // pass those static attributes
         user.setId(old.getId());
         user.setEmail_address(old.getEmail_address());
         user.setAccount_created(old.getAccount_created());
-        user.setToken(old.getToken());
 
         // save the composed user
         userService.save(user);
+    }
+
+    // helper function to get current authenticated user
+    private User getCurrentUser() {
+
+        // Get current authenticated user
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User user = userService.findByUsername(username);
+
+        logger.info("Successfully obtained user: " + username);
+
+        if (user == null) {
+            throw new UserNotFoundException("User Not Found!");
+        }
+
+        return user;
     }
 
 }

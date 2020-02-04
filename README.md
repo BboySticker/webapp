@@ -1,30 +1,22 @@
 # webapp
-Repo for csye 6225
+Repo for CSYE6225 Cloud Computing.
 
-Prerequisites:
+# Prerequisites:
 
+Programming Language: Java 12
 
+Frameworks: Spring-Boot, Spring-Security
 
+IDE: IntelliJ IDEA
 
+vbnm,
 
-
-Build:
-
-
-
-
-
+Server: Tomcat 9
 
 
-Deploy:
+# Build:
 
+Open the project by using IntelliJ IDEA
 
-
-
-
-
-
-
-
-
+Config project by adding new configuration of Spring-Boot 
 

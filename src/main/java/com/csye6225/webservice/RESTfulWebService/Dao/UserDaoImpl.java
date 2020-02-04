@@ -1,12 +1,14 @@
 package com.csye6225.webservice.RESTfulWebService.Dao;
 
+import com.csye6225.webservice.RESTfulWebService.Entity.Authorities;
 import com.csye6225.webservice.RESTfulWebService.Entity.User;
+import com.csye6225.webservice.RESTfulWebService.Entity.Users;
 import com.csye6225.webservice.RESTfulWebService.Exception.UserNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,9 +20,6 @@ public class UserDaoImpl implements UserDao {
 	// need to inject the session factory
 	@Autowired
 	private SessionFactory sessionFactory;
-
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
 
 	@Override
 	public List<User> findAll() {
@@ -52,51 +51,25 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public User save(User theUser) {
+	public void save(User theUser) {
 		// get current hibernate session
 		Session currentSession = sessionFactory.getCurrentSession();
-
 		// create the user
 		currentSession.saveOrUpdate(theUser);
 
-		return theUser;
-	}
+		// save user to the table that usd to auth
+		Users users = new Users();
+		users.setUsername(theUser.getEmail_address());
+		users.setPassword(theUser.getPassword());
+		users.setEnabled(1);
+		currentSession.saveOrUpdate(users);
 
-	@Override
-	public User login(String username, String password) {
+		// save the authority
+		Authorities authorities = new Authorities();
+		authorities.setUsername(theUser.getEmail_address());
+		authorities.setAuthority("ROLE_USER");
+		currentSession.saveOrUpdate(authorities);
 
-		User user = findByUsername(username);
-
-		System.out.println(user.getEmail_address());
-		System.out.println(user.getPassword());
-
-		if (user == null) {
-			throw new UserNotFoundException("User not found");
-		}
-
-//		if (passwordEncoder.matches(user.getPassword(), password)) {
-		if (user.getPassword().equals(password)) {
-			return user;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public Optional<User> findByToken(String token) {
-
-		Session currentSession = sessionFactory.getCurrentSession();
-		Query<User> theQuery =
-				currentSession.createQuery("from User where token=:uToken", User.class);
-
-		theQuery.setParameter("uToken", token);
-		User theUser;
-		try {
-			theUser = theQuery.getSingleResult();
-			return Optional.of(theUser);
-		} catch (Exception e) {
-			return Optional.empty();
-		}
 	}
 
 }

@@ -89,7 +89,7 @@ public class TransactionController {
 
         User currentUser = getCurrentUser();
 
-        logger.info("Deleting the item which id: " + id);
+        logger.info("Deleting the bill which id: " + id);
 
         Bill theBill = billService.findById(id);
 

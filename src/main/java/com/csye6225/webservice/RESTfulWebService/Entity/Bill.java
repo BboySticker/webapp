@@ -1,17 +1,14 @@
 package com.csye6225.webservice.RESTfulWebService.Entity;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.web.multipart.MultipartFile;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "bill")
-//@JsonFilter("BillFilter")
 public class Bill {
 
     private enum PaymentStatus{
@@ -62,13 +59,18 @@ public class Bill {
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
-    @Column(name = "attachment_id")
-    private String attachmentId;
+//    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne
+    @Cascade(value = { CascadeType.REMOVE, CascadeType.DELETE})
+    @JoinColumn(name = "attachment_id", referencedColumnName = "id")
+    private File attachment;
 
     public Bill() {
     }
 
-    public Bill(String id, String createdTs, String updatedTs, String ownerId, String vendor, String billDate, String dueDate, double amountDue, List<String> categories, PaymentStatus paymentStatus, String attachmentId) {
+    public Bill(String id, String createdTs, String updatedTs, String ownerId, String vendor,
+                String billDate, String dueDate, double amountDue, List<String> categories,
+                PaymentStatus paymentStatus, File attachment) {
         this.id = id;
         this.createdTs = createdTs;
         this.updatedTs = updatedTs;
@@ -79,7 +81,7 @@ public class Bill {
         this.amountDue = amountDue;
         this.categories = categories;
         this.paymentStatus = paymentStatus;
-        this.attachmentId = attachmentId;
+        this.attachment = attachment;
     }
 
     public String getId() {
@@ -162,12 +164,12 @@ public class Bill {
         this.paymentStatus = paymentStatus;
     }
 
-    public String getAttachmentId() {
-        return attachmentId;
+    public File getAttachment() {
+        return attachment;
     }
 
-    public void setAttachmentId(String attachmentId) {
-        this.attachmentId = attachmentId;
+    public void setAttachment(File attachment) {
+        this.attachment = attachment;
     }
 
     @Override
@@ -183,7 +185,7 @@ public class Bill {
                 ", amountDue=" + amountDue +
                 ", categories=" + categories +
                 ", paymentStatus=" + paymentStatus +
-                ", attachmentId='" + attachmentId + '\'' +
+                ", attachment=" + attachment +
                 '}';
     }
 }

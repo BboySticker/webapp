@@ -1,6 +1,7 @@
 package com.csye6225.webservice.RESTfulWebService.Dao;
 
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
+import com.csye6225.webservice.RESTfulWebService.Entity.File;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -55,25 +56,13 @@ public class BillDaoImpl implements BillDao {
         // delete the file attached to this bill
         Bill theBill = findById(id);
 
-        String fileId = theBill.getAttachmentId();
+        String fileId = theBill.getAttachment().getId();
 
         System.out.println("Delete the attachment: " + fileId);
 
-        // delete the attachment of this bill, if it exists
-        Query deleteAttachment =
-                currentSession.createQuery("delete from File where id=:uFileId");
-
-        deleteAttachment.setParameter("uFileId", fileId);
-
-        deleteAttachment.executeUpdate();
-
         // delete the bill
-        Query theQuery =
-                currentSession.createQuery("delete from Bill where id=:billId");
-
-        theQuery.setParameter("billId", id);
-
-        theQuery.executeUpdate();
+        // it can delete the attached file automatically
+        currentSession.delete(theBill);
     }
 
     @Override
@@ -82,6 +71,15 @@ public class BillDaoImpl implements BillDao {
         Session currentSession = sessionFactory.getCurrentSession();
 
         currentSession.saveOrUpdate(bill);
+    }
+
+    public File getFile(String fileId) {
+
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        File theFile = currentSession.get(File.class, fileId);
+
+        return theFile;
     }
 
 }

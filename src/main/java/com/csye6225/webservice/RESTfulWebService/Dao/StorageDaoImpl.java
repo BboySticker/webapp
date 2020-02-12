@@ -4,12 +4,12 @@ import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
 import com.csye6225.webservice.RESTfulWebService.Entity.File;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,13 +26,11 @@ public class StorageDaoImpl implements StorageDao {
     }
 
     @Override
-    public File store(String billId, MultipartFile file) throws IOException {
+    public File store(String billId, MultipartFile file, Path location) throws IOException {
 
         Bill theBill = billDao.findById(billId);
 
         String fileId = UUID.randomUUID().toString();
-
-        theBill.setAttachmentId(fileId);
 
         Session currentSession = sessionFactory.getCurrentSession();
 
@@ -40,8 +38,14 @@ public class StorageDaoImpl implements StorageDao {
 
         theFile.setId(fileId);
         theFile.setFileName(file.getOriginalFilename());
-//        theFile.setUrl(file.getResource().getURL().toString());
+        theFile.setUrl(location.toFile().getAbsolutePath());
         theFile.setUploadDate(new Date());
+
+        theFile.setBillId(theBill.getId());
+        theFile.setOwnerId(theBill.getOwnerId());
+        theFile.setSize(file.getSize());
+
+        theBill.setAttachment(theFile);
 
         currentSession.saveOrUpdate(theFile);
 
@@ -63,13 +67,17 @@ public class StorageDaoImpl implements StorageDao {
     @Override
     public void deleteById(String fileId) {
 
+        File theFile = findById(fileId);
+
+        Bill theBill = billDao.findById(theFile.getBillId());
+
+        theBill.setAttachment(null);
+
+        billDao.save(theBill);
+
         Session currentSession = sessionFactory.getCurrentSession();
 
-        Query theQuery =
-                currentSession.createQuery("delete from File where id=:uFileId");
-
-        theQuery.setParameter("uFileId", fileId);
-
-        theQuery.executeUpdate();
+        currentSession.delete(theFile);
     }
+
 }

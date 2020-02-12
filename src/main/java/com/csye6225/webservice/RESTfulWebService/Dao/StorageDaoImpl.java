@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -39,7 +41,9 @@ public class StorageDaoImpl implements StorageDao {
         theFile.setId(fileId);
         theFile.setFileName(file.getOriginalFilename());
         theFile.setUrl(location.toFile().getAbsolutePath());
-        theFile.setUploadDate(new Date());
+
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+        theFile.setUploadDate(dateFormat.format(new Date()));
 
         theFile.setBillId(theBill.getId());
         theFile.setOwnerId(theBill.getOwnerId());

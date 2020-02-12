@@ -33,7 +33,7 @@ public class File {
     private String url;
 
     @Column(name = "upload_date")
-    private Date uploadDate;
+    private String uploadDate;
 
     @Column(name = "size")
     private long size;
@@ -50,7 +50,7 @@ public class File {
     public File() {
     }
 
-    public File(String id, String fileName, String url, Date uploadDate, long size, String billId, String ownerId) {
+    public File(String id, String fileName, String url, String uploadDate, long size, String billId, String ownerId) {
         this.id = id;
         this.fileName = fileName;
         this.url = url;
@@ -84,11 +84,11 @@ public class File {
         this.url = url;
     }
 
-    public Date getUploadDate() {
+    public String getUploadDate() {
         return uploadDate;
     }
 
-    public void setUploadDate(Date uploadDate) {
+    public void setUploadDate(String uploadDate) {
         this.uploadDate = uploadDate;
     }
 

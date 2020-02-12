@@ -40,9 +40,6 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.CREATED)
     private @ResponseBody Bill createBill(@RequestBody Bill bill) {
 
-        System.out.println(bill.getCategories());
-        System.out.println(bill.getPaymentStatus());
-
         // use helper function to get current authenticated user
         User currentUser = getCurrentUser();
 
@@ -70,7 +67,7 @@ public class TransactionController {
     }
 
     @GetMapping("/v1/bill/{id}")
-    private Bill getBill(@PathVariable String id) {
+    private @ResponseBody Bill getBill(@PathVariable String id) {
 
         User currentUser = getCurrentUser();
 

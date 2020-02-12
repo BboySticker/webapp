@@ -1,9 +1,6 @@
 package com.csye6225.webservice.RESTfulWebService.Entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -38,14 +35,29 @@ public class File {
     @Column(name = "upload_date")
     private Date uploadDate;
 
+    @Column(name = "size")
+    private long size;
+
+    @Column(name = "bill_id")
+    private String billId;
+
+    @Column(name = "owner_id")
+    private String ownerId;
+
+    @OneToOne(mappedBy = "attachment")
+    private Bill bill;
+
     public File() {
     }
 
-    public File(String id, String fileName, String url, Date uploadDate) {
+    public File(String id, String fileName, String url, Date uploadDate, long size, String billId, String ownerId) {
         this.id = id;
         this.fileName = fileName;
         this.url = url;
         this.uploadDate = uploadDate;
+        this.size = size;
+        this.billId = billId;
+        this.ownerId = ownerId;
     }
 
     public String getId() {
@@ -80,6 +92,30 @@ public class File {
         this.uploadDate = uploadDate;
     }
 
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public String getBillId() {
+        return billId;
+    }
+
+    public void setBillId(String billId) {
+        this.billId = billId;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
     @Override
     public String toString() {
         return "File{" +
@@ -87,6 +123,9 @@ public class File {
                 ", fileName='" + fileName + '\'' +
                 ", url='" + url + '\'' +
                 ", uploadDate=" + uploadDate +
+                ", size=" + size +
+                ", billId='" + billId + '\'' +
+                ", ownerId='" + ownerId + '\'' +
                 '}';
     }
 }

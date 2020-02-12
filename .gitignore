@@ -1,3 +1,7 @@
+# 
+upload-dir/
+
+# IDEA cache file
 .idea
 
 # CMake

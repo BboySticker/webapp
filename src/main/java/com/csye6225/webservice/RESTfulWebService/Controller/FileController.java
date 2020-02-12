@@ -45,11 +45,13 @@ public class FileController {
         if (theBill == null || ! theBill.getOwnerId().equals(getCurrentUser().getId())) {
             throw new AttachFileException("Bill Not Found!");
         }
-        String existFileId = theBill.getAttachmentId();
 
-        if (existFileId != null) {
-            storageService.deleteById(existFileId);
+        File attachment = theBill.getAttachment();
+
+        if (attachment != null) {
+            storageService.deleteById(attachment.getId());
         }
+
         File theFile = storageService.store(id, file);
 
         return theFile;
@@ -67,7 +69,8 @@ public class FileController {
         if (theBill == null || ! theBill.getOwnerId().equals(getCurrentUser().getId())) {
             throw new BillNotFoundException("Bill Not Found!");
         }
-        if (theFile == null || theBill.getAttachmentId() == null || ! theBill.getAttachmentId().equals(theFile.getId())) {
+        if (theFile == null || theBill.getAttachment().getId() == null
+                || ! theBill.getAttachment().getId().equals(theFile.getId())) {
             throw new StorageFileNotFoundException("File Not Found");
         }
         return theFile;
@@ -79,15 +82,8 @@ public class FileController {
 
         // 1. delete file from the database
         // 2. delete the attachment id inside bill database
-        // TODO: when delete a bill, the attached file should be deleted
-
-        File theFile = getFile(id, fileId);
-
-        Bill theBill = billService.findById(id);
-
-        theBill.setAttachmentId(null);
-
-        billService.save(theBill);
+        // 3. delete the physical file from server
+        // 4. when delete a bill, the attached file should be deleted
 
         storageService.deleteById(fileId);
     }

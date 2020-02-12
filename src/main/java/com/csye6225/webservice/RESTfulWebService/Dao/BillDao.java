@@ -1,6 +1,7 @@
 package com.csye6225.webservice.RESTfulWebService.Dao;
 
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
+import com.csye6225.webservice.RESTfulWebService.Entity.File;
 
 import java.util.List;
 
@@ -13,5 +14,7 @@ public interface BillDao {
     void deleteById(String id);
 
     void save(Bill bill);
+
+    File getFile(String fileId);
 
 }

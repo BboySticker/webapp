@@ -3,16 +3,13 @@ package com.csye6225.webservice.RESTfulWebService.Dao;
 import com.csye6225.webservice.RESTfulWebService.Entity.Authorities;
 import com.csye6225.webservice.RESTfulWebService.Entity.User;
 import com.csye6225.webservice.RESTfulWebService.Entity.Users;
-import com.csye6225.webservice.RESTfulWebService.Exception.UserNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class UserDaoImpl implements UserDao {

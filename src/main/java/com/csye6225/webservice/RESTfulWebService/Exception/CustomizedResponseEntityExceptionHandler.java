@@ -71,6 +71,22 @@ public class CustomizedResponseEntityExceptionHandler
     }
 
 
+    // handle the storage file not found
+    @ExceptionHandler(StorageFileNotFoundException.class)
+    public final ResponseEntity<Object> handleStorageFileNotFound(StorageFileNotFoundException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse =
+                new ExceptionResponse(new Date(), "File Not Found!", request.getDescription(false));
+        return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
+    }
+
+
+    // handle the attach file error
+    @ExceptionHandler(AttachFileException.class)
+    public final ResponseEntity<Object> handleAttachFileException(AttachFileException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse =
+                new ExceptionResponse(new Date(), "Attach File Error!", request.getDescription(false));
+        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
 
 
     @Override

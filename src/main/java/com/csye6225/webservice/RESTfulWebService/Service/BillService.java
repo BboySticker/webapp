@@ -1,6 +1,7 @@
 package com.csye6225.webservice.RESTfulWebService.Service;
 
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

@@ -2,6 +2,7 @@ package com.csye6225.webservice.RESTfulWebService.Entity;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -61,10 +62,13 @@ public class Bill {
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
+    @Column(name = "attachment_id")
+    private String attachmentId;
+
     public Bill() {
     }
 
-    public Bill(String id, String createdTs, String updatedTs, String ownerId, String vendor, String billDate, String dueDate, double amountDue, List<String> categories, PaymentStatus paymentStatus) {
+    public Bill(String id, String createdTs, String updatedTs, String ownerId, String vendor, String billDate, String dueDate, double amountDue, List<String> categories, PaymentStatus paymentStatus, String attachmentId) {
         this.id = id;
         this.createdTs = createdTs;
         this.updatedTs = updatedTs;
@@ -75,6 +79,7 @@ public class Bill {
         this.amountDue = amountDue;
         this.categories = categories;
         this.paymentStatus = paymentStatus;
+        this.attachmentId = attachmentId;
     }
 
     public String getId() {
@@ -157,19 +162,28 @@ public class Bill {
         this.paymentStatus = paymentStatus;
     }
 
+    public String getAttachmentId() {
+        return attachmentId;
+    }
+
+    public void setAttachmentId(String attachmentId) {
+        this.attachmentId = attachmentId;
+    }
+
     @Override
     public String toString() {
         return "Bill{" +
                 "id='" + id + '\'' +
-                ", createdTs=" + createdTs +
-                ", updatedTs=" + updatedTs +
+                ", createdTs='" + createdTs + '\'' +
+                ", updatedTs='" + updatedTs + '\'' +
                 ", ownerId='" + ownerId + '\'' +
                 ", vendor='" + vendor + '\'' +
-                ", billDate=" + billDate +
-                ", dueDate=" + dueDate +
+                ", billDate='" + billDate + '\'' +
+                ", dueDate='" + dueDate + '\'' +
                 ", amountDue=" + amountDue +
                 ", categories=" + categories +
-                ", paymentStatus='" + paymentStatus + '\'' +
+                ", paymentStatus=" + paymentStatus +
+                ", attachmentId='" + attachmentId + '\'' +
                 '}';
     }
 }

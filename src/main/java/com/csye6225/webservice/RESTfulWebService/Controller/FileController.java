@@ -49,11 +49,9 @@ public class FileController {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
 
         String[] parts = filename.split("\\.");
-        System.out.println("parts: "+parts);
-        System.out.println("parts: "+parts.length);
 
         String suffix = parts[parts.length - 1];
-        System.out.println("Suffix: " + suffix);
+        logger.info("Upload File Extension is: " + suffix);
 
         // file not allowed to store
         if (! EXTENSIONS.contains(suffix)) {

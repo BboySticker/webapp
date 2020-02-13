@@ -14,15 +14,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 
 @RestController
 public class FileController {
+
+    private static final String[] extensions = {"pdf", "jpeg", "jpg", "png"};
+    private static final List EXTENSIONS = Arrays.asList(extensions);
 
     private StorageService storageService;
     private BillService billService;
@@ -39,6 +45,20 @@ public class FileController {
 
     @PostMapping("/v1/bill/{id}/file")
     private @ResponseBody File attachFile(@PathVariable String id, @RequestParam("file") MultipartFile file) throws IOException {
+
+        String filename = StringUtils.cleanPath(file.getOriginalFilename());
+
+        String[] parts = filename.split("\\.");
+        System.out.println("parts: "+parts);
+        System.out.println("parts: "+parts.length);
+
+        String suffix = parts[parts.length - 1];
+        System.out.println("Suffix: " + suffix);
+
+        // file not allowed to store
+        if (! EXTENSIONS.contains(suffix)) {
+            throw new AttachFileException("Attach File Error!");
+        }
 
         Bill theBill = billService.findById(id);
 

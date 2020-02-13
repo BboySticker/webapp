@@ -23,6 +23,7 @@ public class StorageServiceImpl implements StorageService {
     private StorageDao storageDao;
     private StorageProperties properties;
 
+
     @Autowired
     public StorageServiceImpl(StorageProperties properties, StorageDao storageDao, UserService userService) {
         this.rootLocation = Paths.get(properties.getLocation());

@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: com.csye6225.webservice.RESTfulWebService.RestfulWebServiceApplication
-

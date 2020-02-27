@@ -1,27 +1,10 @@
 package com.csye6225.webservice.RESTfulWebService.Entity.Bill;
 
-import com.csye6225.webservice.RESTfulWebService.Entity.Bill.Bill;
-
 import javax.persistence.*;
 
 @Entity
 @Table(name = "file")
 public class File {
-
-    /*
-    file_name*	    string
-                    readOnly: true
-                    example: mybill.pdf
-    id*	            string($uuid)
-                    readOnly: true
-                    example: d290f1ee-6c54-4b01-90e6-d701748f0851
-    url*	        string
-                    readOnly: true
-                    example: /tmp/file.jpg
-    upload_date*	string($date)
-                    readOnly: true
-                    example: 2020-01-12
-     */
 
     @Id
     @Column(name = "id")
@@ -45,13 +28,16 @@ public class File {
     @Column(name = "owner_id")
     private String ownerId;
 
+    @Column(name = "s3_metadata")
+    private String s3Metadata;
+
     @OneToOne(mappedBy = "attachment")
     private Bill bill;
 
     public File() {
     }
 
-    public File(String id, String fileName, String url, String uploadDate, long size, String billId, String ownerId) {
+    public File(String id, String fileName, String url, String uploadDate, long size, String billId, String ownerId, String s3Metadata) {
         this.id = id;
         this.fileName = fileName;
         this.url = url;
@@ -59,6 +45,7 @@ public class File {
         this.size = size;
         this.billId = billId;
         this.ownerId = ownerId;
+        this.s3Metadata = s3Metadata;
     }
 
     public String getId() {
@@ -117,6 +104,14 @@ public class File {
         this.ownerId = ownerId;
     }
 
+    public String getS3Metadata() {
+        return s3Metadata;
+    }
+
+    public void setS3Metadata(String s3Metadata) {
+        this.s3Metadata = s3Metadata;
+    }
+
     @Override
     public String toString() {
         return "File{" +
@@ -127,6 +122,7 @@ public class File {
                 ", size=" + size +
                 ", billId='" + billId + '\'' +
                 ", ownerId='" + ownerId + '\'' +
+                ", s3Metadata='" + s3Metadata + '\'' +
                 '}';
     }
 }

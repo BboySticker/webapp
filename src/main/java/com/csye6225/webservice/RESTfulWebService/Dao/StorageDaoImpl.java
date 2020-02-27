@@ -1,5 +1,6 @@
 package com.csye6225.webservice.RESTfulWebService.Dao;
 
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill.Bill;
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill.File;
 import org.hibernate.Session;
@@ -77,6 +78,37 @@ public class StorageDaoImpl implements StorageDao {
         theFile.setBillId(theBill.getId());
         theFile.setOwnerId(theBill.getOwnerId());
         theFile.setSize(file.getSize());
+
+        theBill.setAttachment(theFile);
+
+        currentSession.saveOrUpdate(theFile);
+        currentSession.saveOrUpdate(theBill);
+
+        return theFile;
+    }
+
+    public File store(String billId, MultipartFile file, String keyName, PutObjectResult obj) {
+
+        Bill theBill = billDao.findById(billId);
+
+        String fileId = UUID.randomUUID().toString();
+
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        File theFile = new File();
+
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+        theFile.setUploadDate(dateFormat.format(new Date()));
+        theFile.setId(fileId);
+        theFile.setFileName(file.getOriginalFilename());
+
+        theFile.setUrl(keyName);
+
+        theFile.setBillId(theBill.getId());
+        theFile.setOwnerId(theBill.getOwnerId());
+        theFile.setSize(file.getSize());
+
+        theFile.setS3Metadata(obj.getMetadata().toString());
 
         theBill.setAttachment(theFile);
 

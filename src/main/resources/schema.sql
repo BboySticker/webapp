@@ -65,7 +65,8 @@ create table file
 	upload_date char(30) null,
 	size mediumtext null,
 	bill_id char(50) null,
-	owner_id char(50) null
+	owner_id char(50) null,
+	s3_metadata varchar(255) null
 );
 
 

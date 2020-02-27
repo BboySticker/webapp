@@ -108,7 +108,15 @@ public class StorageDaoImpl implements StorageDao {
         theFile.setOwnerId(theBill.getOwnerId());
         theFile.setSize(file.getSize());
 
-        theFile.setS3Metadata(obj.getMetadata().toString());
+        if (obj != null && obj.getMetadata() != null) {
+            theFile.setS3Metadata(obj.getMetadata().toString());
+        }
+        else if (obj != null) {
+            theFile.setS3Metadata("MD5" + obj.getContentMd5() + ";Etag:" + obj.getETag() + ";Version ID:" + obj.getVersionId());
+        }
+        else {
+            theFile.setS3Metadata(" - ");
+        }
 
         theBill.setAttachment(theFile);
 

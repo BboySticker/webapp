@@ -1,10 +1,8 @@
 package com.csye6225.webservice.RESTfulWebService.Dao;
 
-import com.csye6225.webservice.RESTfulWebService.Entity.User;
+import com.csye6225.webservice.RESTfulWebService.Entity.User.User;
 
-import javax.naming.AuthenticationException;
 import java.util.List;
-import java.util.Optional;
 
 public interface UserDao {
 

@@ -88,6 +88,21 @@ public class CustomizedResponseEntityExceptionHandler
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
+    // handle the attach file error
+    @ExceptionHandler(RecipeNotFoundException.class)
+    public final ResponseEntity<Object> handleAttachFileException(RecipeNotFoundException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse =
+                new ExceptionResponse(new Date(), "Recipe Not Found!", request.getDescription(false));
+        return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
+    }
+
+    // handle the attach image error
+    @ExceptionHandler(AttachImageException.class)
+    public final ResponseEntity<Object> handleAttachFileException(AttachImageException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse =
+                new ExceptionResponse(new Date(), "Attach Image Error!", request.getDescription(false));
+        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,

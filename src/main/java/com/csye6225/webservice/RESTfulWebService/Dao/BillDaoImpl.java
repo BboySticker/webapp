@@ -1,7 +1,7 @@
 package com.csye6225.webservice.RESTfulWebService.Dao;
 
-import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
-import com.csye6225.webservice.RESTfulWebService.Entity.File;
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.Bill;
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.File;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;

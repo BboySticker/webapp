@@ -1,8 +1,8 @@
 package com.csye6225.webservice.RESTfulWebService.Controller;
 
-import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
-import com.csye6225.webservice.RESTfulWebService.Entity.File;
-import com.csye6225.webservice.RESTfulWebService.Entity.User;
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.Bill;
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.File;
+import com.csye6225.webservice.RESTfulWebService.Entity.User.User;
 import com.csye6225.webservice.RESTfulWebService.Exception.AttachFileException;
 import com.csye6225.webservice.RESTfulWebService.Exception.BillNotFoundException;
 import com.csye6225.webservice.RESTfulWebService.Exception.StorageFileNotFoundException;
@@ -87,7 +87,8 @@ public class FileController {
         if (theBill == null || ! theBill.getOwnerId().equals(getCurrentUser().getId())) {
             throw new BillNotFoundException("Bill Not Found!");
         }
-        if (theFile == null || theBill.getAttachment().getId() == null
+        if (theFile == null || theBill.getAttachment() == null
+                || theBill.getAttachment().getId() == null
                 || ! theBill.getAttachment().getId().equals(theFile.getId())) {
             throw new StorageFileNotFoundException("File Not Found");
         }

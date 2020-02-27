@@ -20,7 +20,8 @@ import java.util.logging.Logger;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages="com.csye6225.webservice.RESTfulWebService")
-@PropertySource(("classpath:persistence-mysql.properties"))
+//@PropertySource(("classpath:persistence-mysql.properties"))
+@PropertySource(("classpath:application.properties"))
 public class ApplicationConfiguration {
 
     // set up variable to hold the properties

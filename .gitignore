@@ -1,3 +1,9 @@
+*.iml
+
+# Maven files
+mvnw
+mvnw.cmd
+
 # 
 upload-dir/
 

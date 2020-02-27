@@ -1,8 +1,8 @@
 package com.csye6225.webservice.RESTfulWebService.Controller;
 
 
-import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
-import com.csye6225.webservice.RESTfulWebService.Entity.User;
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.Bill;
+import com.csye6225.webservice.RESTfulWebService.Entity.User.User;
 import com.csye6225.webservice.RESTfulWebService.Exception.BillNotFoundException;
 import com.csye6225.webservice.RESTfulWebService.Exception.UserNotFoundException;
 import com.csye6225.webservice.RESTfulWebService.Service.BillService;

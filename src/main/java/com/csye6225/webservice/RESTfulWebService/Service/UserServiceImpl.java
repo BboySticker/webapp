@@ -1,8 +1,7 @@
 package com.csye6225.webservice.RESTfulWebService.Service;
 
 import com.csye6225.webservice.RESTfulWebService.Dao.UserDao;
-import com.csye6225.webservice.RESTfulWebService.Entity.User;
-import org.apache.commons.lang3.StringUtils;
+import com.csye6225.webservice.RESTfulWebService.Entity.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,8 +14,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 
 @Service

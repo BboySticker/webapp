@@ -1,7 +1,8 @@
-package com.csye6225.webservice.RESTfulWebService.Entity;
+package com.csye6225.webservice.RESTfulWebService.Entity.Bill;
+
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.Bill;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Table(name = "file")

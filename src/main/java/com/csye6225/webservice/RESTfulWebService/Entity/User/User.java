@@ -1,4 +1,4 @@
-package com.csye6225.webservice.RESTfulWebService.Entity;
+package com.csye6225.webservice.RESTfulWebService.Entity.User;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 

@@ -1,6 +1,6 @@
 package com.csye6225.webservice.RESTfulWebService.Service;
 
-import com.csye6225.webservice.RESTfulWebService.Entity.File;
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.File;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

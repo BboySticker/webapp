@@ -1,6 +1,6 @@
 package com.csye6225.webservice.RESTfulWebService.Controller;
 
-import com.csye6225.webservice.RESTfulWebService.Entity.User;
+import com.csye6225.webservice.RESTfulWebService.Entity.User.User;
 import com.csye6225.webservice.RESTfulWebService.Exception.*;
 import com.csye6225.webservice.RESTfulWebService.Service.UserService;
 import com.csye6225.webservice.RESTfulWebService.Validation.EmailValidator;

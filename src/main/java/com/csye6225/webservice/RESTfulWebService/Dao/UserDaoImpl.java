@@ -1,8 +1,8 @@
 package com.csye6225.webservice.RESTfulWebService.Dao;
 
-import com.csye6225.webservice.RESTfulWebService.Entity.Authorities;
-import com.csye6225.webservice.RESTfulWebService.Entity.User;
-import com.csye6225.webservice.RESTfulWebService.Entity.Users;
+import com.csye6225.webservice.RESTfulWebService.Entity.User.Authorities;
+import com.csye6225.webservice.RESTfulWebService.Entity.User.User;
+import com.csye6225.webservice.RESTfulWebService.Entity.User.Users;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;

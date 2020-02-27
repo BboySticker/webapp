@@ -1,13 +1,13 @@
 package com.csye6225.webservice.RESTfulWebService.Service;
 
 import com.csye6225.webservice.RESTfulWebService.Dao.BillDao;
-import com.csye6225.webservice.RESTfulWebService.Entity.Bill;
-import com.csye6225.webservice.RESTfulWebService.Entity.File;
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.Bill;
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.File;
 import com.csye6225.webservice.RESTfulWebService.Exception.StorageFileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -16,8 +16,14 @@ import java.util.List;
 @Service
 public class BillServiceImpl implements BillService {
 
+    @Value("${app.profile.name}")
+    private String PROFILE_NAME;
+
     @Autowired
     private BillDao billDao;
+
+    @Autowired
+    private S3Services s3Services;
 
     @Override
     @Transactional
@@ -46,24 +52,33 @@ public class BillServiceImpl implements BillService {
             throw new StorageFileNotFoundException("File Not Found!");
         }
 
-        Path dirPath = Paths.get(theFile.getUrl());
-        Path thePath = Paths.get(theFile.getUrl() + "/" + theFile.getFileName());
+        // delete the file attached to this bill
+        if (PROFILE_NAME.equalsIgnoreCase("local")) {
 
-        System.out.println(thePath);
+            Path dirPath = Paths.get(theFile.getUrl());
+            Path thePath = Paths.get(theFile.getUrl() + "/" + theFile.getFileName());
 
-        try {
-            Files.deleteIfExists(thePath);
+            System.out.println(thePath);
 
-            dirPath.toFile().delete();
+            try {
+                Files.deleteIfExists(thePath);
+
+                dirPath.toFile().delete();
+            }
+            catch(NoSuchFileException e) {
+                System.out.println("No such file/directory exists");
+            }
+            catch(DirectoryNotEmptyException e) {
+                System.out.println("Directory is not empty.");
+            }
+            catch(IOException e) {
+                System.out.println("Invalid permissions.");
+            }
         }
-        catch(NoSuchFileException e) {
-            System.out.println("No such file/directory exists");
-        }
-        catch(DirectoryNotEmptyException e) {
-            System.out.println("Directory is not empty.");
-        }
-        catch(IOException e) {
-            System.out.println("Invalid permissions.");
+        else if (PROFILE_NAME.equalsIgnoreCase("aws")) {
+
+            s3Services.deleteFile(theFile.getUrl());
+
         }
 
         System.out.println("Deletion successful.");

@@ -1,4 +1,4 @@
-package com.csye6225.webservice.RESTfulWebService.Entity;
+package com.csye6225.webservice.RESTfulWebService.Entity.Bill;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -59,7 +59,6 @@ public class Bill {
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
-//    @OneToOne(cascade = CascadeType.REMOVE)
     @OneToOne
     @Cascade(value = { CascadeType.REMOVE, CascadeType.DELETE})
     @JoinColumn(name = "attachment_id", referencedColumnName = "id")

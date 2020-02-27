@@ -1,9 +1,9 @@
 package com.csye6225.webservice.RESTfulWebService.Service;
 
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.csye6225.webservice.RESTfulWebService.Configuration.StorageProperties;
 import com.csye6225.webservice.RESTfulWebService.Dao.StorageDao;
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill.File;
-import com.csye6225.webservice.RESTfulWebService.Entity.Recipe.Image;
 import com.csye6225.webservice.RESTfulWebService.Exception.StorageException;
 import com.csye6225.webservice.RESTfulWebService.Exception.StorageFileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
-import java.util.UUID;
 
 
 @Service
@@ -93,10 +92,11 @@ public class StorageServiceImpl implements StorageService {
             try {
                 // use recipe id as a unique identifier
                 String keyName = "csye6225/" + UPLOADED_FOLDER + "/" + billId + "/" + filename;
-                s3Services.uploadFile(keyName, file);
+
+                PutObjectResult obj = s3Services.uploadFile(keyName, file);
 
                 // attach the file to bill
-                return storageDao.store(billId, file, keyName);
+                return storageDao.store(billId, file, keyName, obj);
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -122,7 +122,6 @@ public class StorageServiceImpl implements StorageService {
         if (theFile == null) {
             throw new StorageFileNotFoundException("File Not Found!");
         }
-
 
         if (PROFILE_NAME.equalsIgnoreCase("local")) {
 

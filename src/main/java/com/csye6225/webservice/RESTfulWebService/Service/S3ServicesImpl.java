@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.csye6225.webservice.RESTfulWebService.Utils.ConvertFromMultipart;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class S3ServicesImpl implements S3Services {
     private String bucketName;
 
     @Override
-    public void uploadFile(String keyName, MultipartFile file) throws IOException {
+    public PutObjectResult uploadFile(String keyName, MultipartFile file) throws IOException {
 
         File theFile = ConvertFromMultipart.convertFromMultipart(file);
 
@@ -37,12 +38,14 @@ public class S3ServicesImpl implements S3Services {
             PutObjectRequest request = new PutObjectRequest(bucketName, keyName, theFile);
 
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("plain/text");
             metadata.addUserMetadata("x-amz-meta-title", theFile.getName());
             request.setMetadata(metadata);
 
-            s3client.putObject(request);
+            PutObjectResult obj = s3client.putObject(request);
+
             logger.info("===================== Upload File - Done! =====================");
+
+            return obj;
         }
         catch (AmazonServiceException ase) {
             logger.info("Caught an AmazonServiceException from PUT requests, rejected reasons:");
@@ -56,6 +59,8 @@ public class S3ServicesImpl implements S3Services {
             logger.info("Caught an AmazonClientException: ");
             logger.info("Error Message: " + ace.getMessage());
         }
+
+        return null;
     }
 
     @Override

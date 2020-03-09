@@ -70,7 +70,7 @@ jobs:
             ls -al
       - run:
           name: Copy Artifact to S3
-          command: aws s3 sync ./codedeploy_artifact s3://${S3_CODEDEPLOY_BUCKET}
+          command: aws s3 sync --sse ./codedeploy_artifact s3://${S3_CODEDEPLOY_BUCKET}
       - run:
           name: Call CodeDeploy
           command: aws deploy create-deployment \

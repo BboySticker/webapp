@@ -1,34 +1,23 @@
-# Java Maven CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
 version: 2
 jobs:
   pr_check:
     docker:
-      # specify the version you desire here
       - image: circleci/openjdk:8-jdk
-
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-
       - run: mvn dependency:go-offline
-
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-
-      # run tests!
-      - run: mvn integration-test
-
+      - run: 
+          name: Run test
+          command: mvn integration-test
 
   build:
     filter:
@@ -36,39 +25,63 @@ jobs:
         only:
           - master
     docker:
-      # specify the version you desire here
       - image: circleci/openjdk:8-jdk
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-        environment:
-          TEST_DATABASE_URL: mysql://root@localhost/test
-      - image: circleci/mysql:8.0.18
-
-    environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
-            # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-
       - run: mvn dependency:go-offline
-
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-
-      # run tests!
-      - run: mvn integration-test
+      - run:
+          name: Install packages
+          command:
+            - sudo apt-get update
+            - sudo apt-get install -y python-pip
+            - sudo pip install awscli
+      - run: 
+          name: Run test
+          command: mvn integration-test
+      - run:
+          name: Build Artifacts
+          command: 
+            - mvn clean
+            - mvn package
+            - pwd
+            - ls -al
+      - run:
+          name: Build Deployment Artifact
+          command: 
+            - mkdir codedeploy_artifact
+            - zip -r csye6225-webapp-${CIRCLE_BUILD_NUM}.zip ./target/ROOT.jar ./codedeploy/*.sh ./appspec.yml
+            - pwd
+            - ls -al
+            - mv csye6225-webapp-${CIRCLE_BUILD_NUM}.zip codedeploy_artifact/
+            - ls -al
+            - cd codedeploy_artifact
+            - pwd
+            - ls -al
+            - cd ..
+            - pwd
+            - ls -al
+      - run:
+          name: Copy Artifact to S3
+          command: aws s3 sync ./codedeploy_artifact s3://${S3_CODEDEPLOY_BUCKET}
+      - run:
+          name: Call CodeDeploy
+          command:
+            - aws deploy create-deployment \
+                --application-name ${CODEDEPLOY_APPLICATION_NAME} \
+                --deployment-config-name CodeDeployDefault.AllAtOnce \
+                --deployment-group-name ${CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME} \
+                --description "CSYE6225 - CodeDeploy" \
+                --s3-location bucket=${S3_CODEDEPLOY_BUCKET},key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip,bundleType=zip \
+                --region us-east-1 \
+                --output json
 
 workflows:
   version: 2

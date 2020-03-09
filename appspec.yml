@@ -1,0 +1,38 @@
+version: 0.0
+os: linux
+
+files:
+  - source: ./appspec.yml
+    destination: /home/ubuntu
+  - source: /codedeploy/applicationStop.sh
+    destination: /home/ubuntu
+  - source: /codedeploy/beforeInstall.sh
+    destination: /home/ubuntu
+  - source: /codedeploy/applicationStart.sh
+    destination: /home/ubuntu
+  - source: /codedeploy/validateService.sh
+    destination: /home/ubuntu
+  - source: ./webapp/target/ROOT.war
+      destination: /var/lib/tomcat8/webapps
+
+hooks:
+  ApplicationStop:
+    - location: /codedeploy/applicationStop.sh
+      timeout: 180
+      runas: ubuntu
+  BeforeInstall:
+    - location: /codedeploy/beforeInstall.sh
+      timeout: 180
+      runas: ubuntu
+  AfterInstall:
+    - location: /codedeploy/afterInstall.sh
+      timeout: 180
+      runas: ubuntu
+  ValidateService:
+    - location: /codedeploy/beforeInstall.sh
+      timeout: 180
+      runas: ubuntu
+  ApplicationStart:
+    - location: /codedeploy/applicationStart.sh
+      timeout: 180
+      runas: ubuntu

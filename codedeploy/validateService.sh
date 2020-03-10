@@ -1,3 +1,3 @@
 #!/bin/bash
 
-curl localhost:8080/users
+sudo service tomcat8 status

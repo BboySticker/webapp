@@ -57,10 +57,20 @@ jobs:
           name: Build Deployment Artifact
           command: |
             mkdir codedeploy_artifact
-            zip -r csye6225-webapp-$CIRCLE_BUILD_NUM.zip target/ROOT.war codedeploy/*.sh ./appspec.yml
+            cd target
+            ls -al
+            mv ROOT.war ../
+            cd ..
+            pwd
+            cd codedeploy
+            ls -al
+            mv *.sh ../
+            cd ..
+            pwd
+            zip -r csye6225-webapp-$CIRCLE_BUILD_NUM.zip ./ROOT.war ./*.sh ./appspec.yml
             pwd
             ls -al
-            mv csye6225-webapp-$CIRCLE_BUILD_NUM.zip codedeploy_artifact/
+            mv csye6225-webapp-$CIRCLE_BUILD_NUM.zip ./codedeploy_artifact/
             ls -al
             cd codedeploy_artifact
             pwd

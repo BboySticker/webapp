@@ -70,8 +70,11 @@ jobs:
             ls -al
       - run:
           name: Copy Artifact to S3
-          # command: aws s3 sync --sse AES256 ./codedeploy_artifact s3://$S3_CODEDEPLOY_BUCKET
-          command: aws s3 mv --sse AES256 ./codedeploy_artifact/csye6225-webapp-$CIRCLE_BUILD_NUM.zip s3://$S3_CODEDEPLOY_BUCKET
+          command: aws s3 sync ./codedeploy_artifact s3://$S3_CODEDEPLOY_BUCKET --sse AES256
+          # command: |
+          #   aws s3 ls
+          #   aws s3 ls s3://$S3_CODEDEPLOY_BUCKET
+          #   aws s3 mv --sse AES256 ./codedeploy_artifact/csye6225-webapp-$CIRCLE_BUILD_NUM.zip s3://$S3_CODEDEPLOY_BUCKET
       - run:
           name: Call CodeDeploy
           command: aws deploy create-deployment \

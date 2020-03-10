@@ -62,12 +62,7 @@ jobs:
             mv ROOT.war ../
             cd ..
             pwd
-            cd codedeploy
-            ls -al
-            mv *.sh ../
-            cd ..
-            pwd
-            zip -r csye6225-webapp-$CIRCLE_BUILD_NUM.zip ./ROOT.war ./*.sh ./appspec.yml
+            zip -r csye6225-webapp-$CIRCLE_BUILD_NUM.zip ./ROOT.war ./codedeploy/*.sh ./appspec.yml
             pwd
             ls -al
             mv csye6225-webapp-$CIRCLE_BUILD_NUM.zip ./codedeploy_artifact/

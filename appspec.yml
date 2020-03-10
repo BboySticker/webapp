@@ -13,7 +13,7 @@ files:
   - source: /codedeploy/validateService.sh
     destination: /home/ubuntu
   - source: ./webapp/target/ROOT.war
-      destination: /var/lib/tomcat8/webapps
+    destination: /var/lib/tomcat8/webapps
 
 hooks:
   ApplicationStop:

@@ -29,7 +29,7 @@ hooks:
       timeout: 180
       runas: ubuntu
   ValidateService:
-    - location: /codedeploy/beforeInstall.sh
+    - location: /codedeploy/validateService.sh
       timeout: 180
       runas: ubuntu
   ApplicationStart:

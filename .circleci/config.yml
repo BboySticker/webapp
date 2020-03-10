@@ -57,7 +57,7 @@ jobs:
           name: Build Deployment Artifact
           command: |
             mkdir codedeploy_artifact
-            zip -r csye6225-webapp-$CIRCLE_BUILD_NUM.zip ./target/ROOT.war ./codedeploy/*.sh ./appspec.yml
+            zip -r csye6225-webapp-$CIRCLE_BUILD_NUM.zip target/ROOT.war codedeploy/*.sh ./appspec.yml
             pwd
             ls -al
             mv csye6225-webapp-$CIRCLE_BUILD_NUM.zip codedeploy_artifact/
@@ -71,20 +71,16 @@ jobs:
       - run:
           name: Copy Artifact to S3
           command: aws s3 sync ./codedeploy_artifact s3://$S3_CODEDEPLOY_BUCKET --sse AES256
-          # command: |
-          #   aws s3 ls
-          #   aws s3 ls s3://$S3_CODEDEPLOY_BUCKET
-          #   aws s3 mv --sse AES256 ./codedeploy_artifact/csye6225-webapp-$CIRCLE_BUILD_NUM.zip s3://$S3_CODEDEPLOY_BUCKET
       - run:
           name: Call CodeDeploy
           command: aws deploy create-deployment \
-                      --application-name $CODEDEPLOY_APPLICATION_NAME \
-                      --deployment-config-name CodeDeployDefault.AllAtOnce \
-                      --deployment-group-name $CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME \
-                      --description "CSYE6225 - CodeDeploy" \
-                      --s3-location bucket=$S3_CODEDEPLOY_BUCKET,key=csye6225-webapp-$CIRCLE_BUILD_NUM.zip,bundleType=zip \
-                      --region us-east-1 \
-                      --output json
+            --application-name $CODEDEPLOY_APPLICATION_NAME \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --deployment-group-name $CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME \
+            --description "CSYE6225 - CodeDeploy" \
+            --s3-location bucket=$S3_CODEDEPLOY_BUCKET,key=csye6225-webapp-$CIRCLE_BUILD_NUM.zip,bundleType=zip \
+            --region us-east-1 \
+            --output json
 
 workflows:
   version: 2

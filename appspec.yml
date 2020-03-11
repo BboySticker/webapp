@@ -31,8 +31,8 @@ hooks:
       runas: root
   AfterInstall:
     - location: /codedeploy/afterInstall.sh
-        timeout: 180
-        runas: root
+      timeout: 180
+      runas: root
   ApplicationStart:
     - location: /codedeploy/applicationStart.sh
       timeout: 180

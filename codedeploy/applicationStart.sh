@@ -1,4 +1,10 @@
 #!/bin/bash
 #sudo service tomcat8 start
-cd ~/
-sudo setsid java -jar -Dspring.profiles.active=prod ROOT.jar &
+#cd ~/
+#setsid java -jar -Dspring.profiles.active=prod ROOT.jar &
+#java -jar -Dspring.profiles.active=prod ROOT.jar
+
+set -e
+
+service webapp start
+echo "Service started."

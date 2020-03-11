@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# change to tomcat webapps directory.
-# this directory will be different for different tomcat versions.
-#cd /var/lib/tomcat8/webapps
-#sudo rm -rf *
-
 set -e
 
-#cd /home/ubuntu
-#sudo rm -rf *
+user_exists=$(id -u webapp-user > /dev/null 2>&1; echo $?)
+if [ $user_exist -eq 1 ]; then
+    echo "yes the user exists"
+    userdel webapp-user
+else
+    echo "No, the user does not exist"
+fi
 
 # create app user
 useradd --shell /sbin/nologin --system --user-group webapp-user

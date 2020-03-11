@@ -28,20 +28,22 @@ if [[ -f /etc/init.d/webapp ]]; then
 fi
 
 # create symlink to init.d
-#ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
-cat > /etc/init.d/webapp <<'EOF'
-#!/bin/bash
+ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
 
-case $1 in
-start)
-setsid java -jar -Dspring.profiles.active=prod /var/webapp/ROOT.jar &
-;;
-stop)
-pkill java
-;;
-esac
-exit 0
-EOF
+#cat > /etc/init.d/webapp <<'EOF'
+##!/bin/bash
+#
+#case $1 in
+#start)
+#setsid java -jar -Dspring.profiles.active=prod /var/webapp/ROOT.jar &
+#;;
+#stop)
+#pkill java
+#;;
+#esac
+#exit 0
+#EOF
+
 chmod 755 /etc/init.d/webapp
 sudo update-rc.d webapp defaults
 echo "Service installed."

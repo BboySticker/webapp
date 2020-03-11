@@ -12,21 +12,28 @@ files:
     destination: /home/ubuntu
   - source: /codedeploy/applicationStart.sh
     destination: /home/ubuntu
-  - source: /codedeploy/validateService.sh
-    destination: /home/ubuntu
-  - source: ./ROOT.jar
-    destination: /home/ubuntu
+  - source: ROOT.jar
+    destination: /var/webapp
+
+permissions:
+  - object: /var/webapp
+    owner: webapp-user
+    group: webapp-user
 
 hooks:
   ApplicationStop:
     - location: /codedeploy/applicationStop.sh
       timeout: 180
-      runas: ubuntu
+      runas: root
   BeforeInstall:
     - location: /codedeploy/beforeInstall.sh
       timeout: 180
-      runas: ubuntu
+      runas: root
+  AfterInstall:
+    - location: /codedeploy/afterInstall.sh
+        timeout: 180
+        runas: root
   ApplicationStart:
     - location: /codedeploy/applicationStart.sh
       timeout: 180
-      runas: ubuntu
+      runas: root

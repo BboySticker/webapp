@@ -5,9 +5,18 @@
 #cd /var/lib/tomcat8/webapps
 #sudo rm -rf *
 
+set -e
 
-cd /home/ubuntu
-sudo rm -rf *
+#cd /home/ubuntu
+#sudo rm -rf *
+
+# create app user
+useradd --shell /sbin/nologin --system --user-group webapp-user
+
+# create app directory
+mkdir -p /var/webapp
+chown webapp-user /var/webapp
+chgrp webapp-user /var/webapp
 
 #set -e
 #

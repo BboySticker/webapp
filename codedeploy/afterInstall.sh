@@ -15,7 +15,18 @@
 ## set ownerships
 #sudo chown -R tomcat8 work/ logs/ webapps/
 
+set -e
 
+chown webapp-user:webapp-user /var/webapp/ROOT.jar
+
+# protect application from modifications
+chmod 500 /var/webapp/ROOT.jar
+#chattr +i /var/sample-app/sample-app.jar
+
+# create symlink to init.d
+ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
+chkconfig webapp on
+echo "Service installed."
 
 #set -e
 #

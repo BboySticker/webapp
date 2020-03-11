@@ -3,7 +3,7 @@
 set -e
 
 user_exists=$(id -u webapp-user > /dev/null 2>&1; echo $?)
-if [ $user_exist -eq 1 ]; then
+if [ $user_exist -eq 0 ]; then
     echo "yes the user exists"
     userdel webapp-user
 else

@@ -16,8 +16,6 @@ files:
     destination: /home/ubuntu
   - source: ./ROOT.jar
     destination: /home/ubuntu
-  - source: ./ROOT.war
-    destination: /home/ubuntu
 
 hooks:
   ApplicationStop:

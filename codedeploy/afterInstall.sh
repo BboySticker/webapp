@@ -20,7 +20,7 @@ set -e
 chown webapp-user:webapp-user /var/webapp/ROOT.jar
 
 # protect application from modifications
-chmod 500 /var/webapp/ROOT.jar
+chmod 555 /var/webapp/ROOT.jar
 #chattr +i /var/sample-app/sample-app.jar
 
 if [[ -f /etc/init.d/webapp ]]; then
@@ -28,12 +28,24 @@ if [[ -f /etc/init.d/webapp ]]; then
 fi
 
 # create symlink to init.d
-ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
+#ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
+cat > /etc/init.d/webapp <<'EOF'
+#!/bin/bash
+
+case $1 in
+start)
+setsid java -jar -Dspring.profiles.active=prod /var/webapp/ROOT.jar &
+;;
+stop)
+pkill java
+;;
+esac
+exit 0
+EOF
 update-rc.d webapp defaults
 echo "Service installed."
 
-#set -e
-#
+
 #CATALINA_HOME='/usr/share/tomcat8-codedeploy'
 #DEPLOY_TO_ROOT='true'
 ##CONTEXT_PATH='##CONTEXT_PATH##'

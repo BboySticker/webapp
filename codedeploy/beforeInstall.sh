@@ -6,6 +6,9 @@
 #sudo rm -rf *
 
 
+cd /home/ubuntu
+rm -rf *
+
 #set -e
 #
 #CATALINA_HOME=/usr/share/tomcat8-codedeploy

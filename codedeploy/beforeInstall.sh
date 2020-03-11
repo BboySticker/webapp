@@ -7,7 +7,7 @@
 
 
 cd /home/ubuntu
-rm -rf *
+sudo rm -rf *
 
 #set -e
 #

@@ -42,7 +42,8 @@ pkill java
 esac
 exit 0
 EOF
-update-rc.d webapp defaults
+chmod 755 /etc/init.d/webapp
+sudo update-rc.d webapp defaults
 echo "Service installed."
 
 

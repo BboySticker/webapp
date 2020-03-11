@@ -59,10 +59,10 @@ jobs:
             mkdir codedeploy_artifact
             cd target
             ls -al
-            mv ROOT.war ../
+            mv ROOT.jar ../
             cd ..
             pwd
-            zip -r csye6225-webapp-$CIRCLE_BUILD_NUM.zip ./ROOT.war ./codedeploy/*.sh ./appspec.yml
+            zip -r csye6225-webapp-$CIRCLE_BUILD_NUM.zip ./ROOT.jar ./codedeploy/*.sh ./appspec.yml
             pwd
             ls -al
             mv csye6225-webapp-$CIRCLE_BUILD_NUM.zip ./codedeploy_artifact/

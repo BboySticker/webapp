@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo service tomcat8 status
+#sudo service tomcat8 status

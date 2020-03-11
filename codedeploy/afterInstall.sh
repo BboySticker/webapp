@@ -25,7 +25,7 @@ chmod 500 /var/webapp/ROOT.jar
 
 # create symlink to init.d
 ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
-chkconfig webapp on
+update-rc.d webapp defaults
 echo "Service installed."
 
 #set -e

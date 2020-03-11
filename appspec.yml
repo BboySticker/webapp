@@ -8,11 +8,13 @@ files:
     destination: /home/ubuntu
   - source: /codedeploy/beforeInstall.sh
     destination: /home/ubuntu
+  - source: /codedeploy/afterInstall.sh
+    destination: /home/ubuntu
   - source: /codedeploy/applicationStart.sh
     destination: /home/ubuntu
   - source: /codedeploy/validateService.sh
     destination: /home/ubuntu
-  - source: ROOT.jar
+  - source: ./ROOT.jar
     destination: /home/ubuntu
 
 hooks:
@@ -24,14 +26,14 @@ hooks:
     - location: /codedeploy/beforeInstall.sh
       timeout: 180
       runas: ubuntu
-  AfterInstall:
-    - location: /codedeploy/afterInstall.sh
-      timeout: 180
-      runas: ubuntu
-  ValidateService:
-    - location: /codedeploy/validateService.sh
-      timeout: 180
-      runas: ubuntu
+#  AfterInstall:
+#    - location: /codedeploy/afterInstall.sh
+#      timeout: 180
+#      runas: ubuntu
+#  ValidateService:
+#    - location: /codedeploy/validateService.sh
+#      timeout: 180
+#      runas: ubuntu
   ApplicationStart:
     - location: /codedeploy/applicationStart.sh
       timeout: 180

@@ -21,7 +21,7 @@ sudo chown webapp-user:webapp-user /var/webapp/ROOT.jar /var/webapp/ROOT.conf
 
 # protect application from modifications
 sudo chmod 555 /var/webapp/ROOT.jar
-sudo chmod 555 /var/webapp/ROOT.conf
+sudo chmod 755 /var/webapp/ROOT.conf
 #chattr +i /var/sample-app/sample-app.jar
 
 if [[ -f /etc/init.d/webapp ]]; then
@@ -30,20 +30,6 @@ fi
 
 # create symlink to init.d
 sudo ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
-
-#cat > /etc/init.d/webapp <<'EOF'
-##!/bin/bash
-#
-#case $1 in
-#start)
-#setsid java -jar -Dspring.profiles.active=prod /var/webapp/ROOT.jar &
-#;;
-#stop)
-#pkill java
-#;;
-#esac
-#exit 0
-#EOF
 
 sudo chmod 755 /etc/init.d/webapp
 sudo update-rc.d webapp defaults

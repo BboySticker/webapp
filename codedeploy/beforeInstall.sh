@@ -24,7 +24,11 @@ if [[ -f /var/webapp/ROOT.conf ]]; then
 fi
 
 sudo -i
-echo "JAVA_OPTS=-Dspring-profiles-active=prod" > /var/webapp/ROOT.conf
+cat > /var/webapp/ROOT.conf <<'EOF'
+JAVA_OPTS=-Dspring-profiles-active=prod
+esac
+exit 0
+EOF
 cat /env/properties >> /var/webapp/ROOT.conf
 exit
 

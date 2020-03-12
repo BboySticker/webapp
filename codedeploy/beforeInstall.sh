@@ -16,19 +16,15 @@ fi
 # create app directory
 sudo mkdir -p /var/webapp
 
-## Clear ROOT.conf config file
-#if [[ -f /var/webapp/ROOT.conf ]]; then
-#    sudo rm -rf /var/webapp/ROOT.conf
-#fi
-sudo touch ~/ROOT.conf
+# Clear ROOT.conf config file
+if [[ -f /var/webapp/ROOT.conf ]]; then
+    sudo rm -rf /var/webapp/ROOT.conf
+fi
 
-sudo -s
-cat > ~/ROOT.conf <<'EOF'
-JAVA_OPTS=-Dspring-profiles-active=prod
-EOF
-sudo cat /env/properties >> ~/ROOT.conf
-sudo cp ~/ROOT.conf /var/webapp
-exit
+sudo touch /var/webapp/ROOT.conf
+sudo chmod 777 /var/webapp/ROOT.conf
+sudo echo JAVA_OPTS=-Dspring-profiles-active=prod > /var/webapp/ROOT.conf
+sudo cat /env/properties >> /var/webapp/ROOT.conf
 
 sudo chown webapp-user /var/webapp
 sudo chgrp webapp-user /var/webapp

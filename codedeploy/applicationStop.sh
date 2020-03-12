@@ -7,6 +7,6 @@ set -e
 
 if (( $(ps -ef | grep -v grep | grep webapp | wc -l) > 0 ))
 then
-    service webapp stop
+    sudo service webapp stop
     echo "Service stopped."
 fi

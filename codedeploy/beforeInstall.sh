@@ -22,9 +22,9 @@ sudo chgrp webapp-user /var/webapp
 if [[ -f /var/webapp/ROOT.conf ]]; then
     sudo rm -rf /var/webapp/ROOT.conf
 fi
-sudo echo "JAVA_OPTS=-Dspring-profiles-active=prod" > /var/webapp/ROOT.conf
 
 sudo -i
+echo "JAVA_OPTS=-Dspring-profiles-active=prod" > /var/webapp/ROOT.conf
 cat /env/properties >> /var/webapp/ROOT.conf
 exit
 

@@ -17,10 +17,10 @@
 
 set -e
 
-chown webapp-user:webapp-user /var/webapp/ROOT.jar
+sudo chown webapp-user:webapp-user /var/webapp/ROOT.jar /var/webapp/ROOT.conf
 
 # protect application from modifications
-chmod 555 /var/webapp/ROOT.jar
+sudo chmod 555 /var/webapp/ROOT.jar
 #chattr +i /var/sample-app/sample-app.jar
 
 if [[ -f /etc/init.d/webapp ]]; then
@@ -28,7 +28,7 @@ if [[ -f /etc/init.d/webapp ]]; then
 fi
 
 # create symlink to init.d
-ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
+sudo ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
 
 #cat > /etc/init.d/webapp <<'EOF'
 ##!/bin/bash
@@ -44,7 +44,7 @@ ln -s /var/webapp/ROOT.jar /etc/init.d/webapp
 #exit 0
 #EOF
 
-chmod 755 /etc/init.d/webapp
+sudo chmod 755 /etc/init.d/webapp
 sudo update-rc.d webapp defaults
 echo "Service installed."
 

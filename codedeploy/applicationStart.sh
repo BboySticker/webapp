@@ -6,5 +6,5 @@
 
 set -e
 
-service webapp start
+sudo service webapp start
 echo "Service started."

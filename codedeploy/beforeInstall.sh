@@ -4,18 +4,29 @@ set -e
 
 user_exists=$(id -u webapp-user > /dev/null 2>&1; echo $?)
 if [ $user_exists -eq 0 ]; then
-    userdel webapp-user
-else
-    echo "No, the user does not exist"
+    sudo userdel webapp-user
 fi
-
 # create app user
-useradd --shell /sbin/nologin --system --user-group webapp-user
+sudo useradd --shell /sbin/nologin --system --user-group webapp-user
 
+if [ -d /var/webapp ]; then
+    sudo rm -rf /var/webapp
+fi
 # create app directory
-mkdir -p /var/webapp
-chown webapp-user /var/webapp
-chgrp webapp-user /var/webapp
+sudo mkdir -p /var/webapp
+
+sudo chown webapp-user /var/webapp
+sudo chgrp webapp-user /var/webapp
+
+# Clear ROOT.conf config file
+if [[ -f /var/webapp/ROOT.conf ]]; then
+    sudo rm -rf /var/webapp/ROOT.conf
+fi
+sudo echo "JAVA_OPTS=-Dspring-profiles-active=prod" > /var/webapp/ROOT.conf
+
+sudo -i
+cat /env/properties >> /var/webapp/ROOT.conf
+exit
 
 #set -e
 #

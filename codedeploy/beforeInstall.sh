@@ -22,12 +22,13 @@ sudo mkdir -p /var/webapp
 #fi
 sudo touch ~/ROOT.conf
 
-sudo cat > ~/ROOT.conf <<'EOF'
+sudo -s
+cat > ~/ROOT.conf <<'EOF'
 JAVA_OPTS=-Dspring-profiles-active=prod
 EOF
 sudo cat /env/properties >> ~/ROOT.conf
-
 sudo cp ~/ROOT.conf /var/webapp
+exit
 
 sudo chown webapp-user /var/webapp
 sudo chgrp webapp-user /var/webapp

@@ -25,10 +25,12 @@ fi
 
 sudo touch /var/webapp/ROOT.conf
 
-sudo cat > /var/webapp/ROOT.conf <<'EOF'
+sudo -s
+cat > /var/webapp/ROOT.conf <<'EOF'
 JAVA_OPTS=-Dspring-profiles-active=prod
 EOF
-sudo cat /env/properties >> /var/webapp/ROOT.conf
+cat /env/properties >> /var/webapp/ROOT.conf
+exit
 
 #set -e
 #

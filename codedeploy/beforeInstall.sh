@@ -23,7 +23,6 @@ fi
 
 sudo touch /var/webapp/ROOT.conf
 sudo chmod 777 /var/webapp/ROOT.conf
-sudo echo JAVA_OPTS=-Dspring-profiles-active=prod > /var/webapp/ROOT.conf
 sudo cat /env/properties >> /var/webapp/ROOT.conf
 
 sudo chown webapp-user /var/webapp

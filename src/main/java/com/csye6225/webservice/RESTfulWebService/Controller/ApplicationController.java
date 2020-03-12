@@ -36,6 +36,11 @@ public class ApplicationController {
         this.userService = userService;
     }
 
+    @GetMapping("/v1/helloworld")
+    public String helloWorld() {
+        return "Hello World";
+    }
+
     @GetMapping("/users")
     public MappingJacksonValue findAll() {
 

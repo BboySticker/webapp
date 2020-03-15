@@ -4,6 +4,8 @@ os: linux
 files:
   - source: ./appspec.yml
     destination: /home/ubuntu
+  - source: ./cloudwatch/cloudwatch-config.json
+    destination: /home/ubuntu
   - source: /codedeploy/applicationStop.sh
     destination: /home/ubuntu
   - source: /codedeploy/beforeInstall.sh

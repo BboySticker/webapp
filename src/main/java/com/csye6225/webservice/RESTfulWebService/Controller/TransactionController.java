@@ -10,6 +10,7 @@ import com.csye6225.webservice.RESTfulWebService.Service.UserService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.timgroup.statsd.StatsDClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -34,11 +35,16 @@ public class TransactionController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private StatsDClient statsDClient;
+
     private Logger logger = Logger.getLogger(getClass().getName());
 
     @PostMapping("/v1/bill")
     @ResponseStatus(HttpStatus.CREATED)
     private @ResponseBody Bill createBill(@RequestBody Bill bill) {
+
+        statsDClient.incrementCounter("endpoint.bill.http.post");
 
         // use helper function to get current authenticated user
         User currentUser = getCurrentUser();
@@ -61,6 +67,7 @@ public class TransactionController {
     @GetMapping("/v1/bills")
     public @ResponseBody List<Bill> getAllBills() {
 
+        statsDClient.incrementCounter("endpoint.bills.http.get");
         User currentUser = getCurrentUser();
         List<Bill> bills = billService.findAll(currentUser.getId());
         return bills;
@@ -68,6 +75,8 @@ public class TransactionController {
 
     @GetMapping("/v1/bill/{id}")
     private @ResponseBody Bill getBill(@PathVariable String id) {
+
+        statsDClient.incrementCounter("endpoint.bill.http.get");
 
         User currentUser = getCurrentUser();
 
@@ -83,6 +92,8 @@ public class TransactionController {
     @DeleteMapping("/v1/bill/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     private void deleteBill(@PathVariable String id) {
+
+        statsDClient.incrementCounter("endpoint.bill.http.delete");
 
         User currentUser = getCurrentUser();
 
@@ -103,6 +114,8 @@ public class TransactionController {
 
     @PutMapping("/v1/bill/{id}")
     private @ResponseBody Bill updateBill(@RequestBody Bill bill, @PathVariable String id) {
+
+        statsDClient.incrementCounter("endpoint.bill.http.put");
 
         User currentUser = getCurrentUser();
 

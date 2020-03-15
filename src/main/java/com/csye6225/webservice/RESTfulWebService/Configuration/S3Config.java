@@ -27,7 +27,6 @@ public class S3Config {
         System.out.println(env.getProperty("aws.region"));
 
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-//                .withRegion(env.getProperty("aws.region"))
                 .withRegion(region)
                 .withCredentials(new InstanceProfileCredentialsProvider(false))
                 .build();

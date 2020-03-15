@@ -10,6 +10,7 @@ import com.csye6225.webservice.RESTfulWebService.Exception.UserNotFoundException
 import com.csye6225.webservice.RESTfulWebService.Service.BillService;
 import com.csye6225.webservice.RESTfulWebService.Service.StorageService;
 import com.csye6225.webservice.RESTfulWebService.Service.UserService;
+import com.timgroup.statsd.StatsDClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,9 @@ public class FileController {
     private Logger logger = Logger.getLogger(getClass().getName());
 
     @Autowired
+    private StatsDClient statsDClient;
+
+    @Autowired
     public FileController(StorageService storageService, BillService billService, UserService userService) {
         this.storageService = storageService;
         this.billService = billService;
@@ -45,6 +49,8 @@ public class FileController {
 
     @PostMapping("/v1/bill/{id}/file")
     private @ResponseBody File attachFile(@PathVariable String id, @RequestParam("file") MultipartFile file) throws IOException {
+
+        statsDClient.incrementCounter("endpoint.file.http.post");
 
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
 
@@ -79,6 +85,8 @@ public class FileController {
     @ResponseStatus(HttpStatus.OK)
     private @ResponseBody File getFile(@PathVariable String id, @PathVariable String fileId) {
 
+        statsDClient.incrementCounter("endpoint.file.http.get");
+
         Bill theBill = billService.findById(id);
         File theFile = storageService.findById(fileId);
 
@@ -103,6 +111,8 @@ public class FileController {
         // 2. delete the attachment id inside bill database
         // 3. delete the physical file from server
         // 4. when delete a bill, the attached file should be deleted
+
+        statsDClient.incrementCounter("endpoint.file.http.delete");
 
         storageService.deleteById(fileId);
     }

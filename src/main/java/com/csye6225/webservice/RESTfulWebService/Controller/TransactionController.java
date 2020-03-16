@@ -58,6 +58,14 @@ public class TransactionController {
         return savedBill;
     }
 
+    @GetMapping("/v2/bills")
+    public @ResponseBody List<Bill> getAllBillsV2() {
+
+        User currentUser = getCurrentUser();
+        List<Bill> bills = billService.findAll(currentUser.getId());
+        return bills;
+    }
+
     @GetMapping("/v1/bills")
     public @ResponseBody List<Bill> getAllBills() {
 

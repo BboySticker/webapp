@@ -11,6 +11,8 @@ import com.csye6225.webservice.RESTfulWebService.Service.BillService;
 import com.csye6225.webservice.RESTfulWebService.Service.StorageService;
 import com.csye6225.webservice.RESTfulWebService.Service.UserService;
 import com.timgroup.statsd.StatsDClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -22,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 
 @RestController
@@ -35,7 +36,7 @@ public class FileController {
     private BillService billService;
     private UserService userService;
 
-    private Logger logger = Logger.getLogger(getClass().getName());
+    private Logger logger = LogManager.getLogger(getClass());
 
     @Autowired
     private StatsDClient statsDClient;
@@ -53,31 +54,30 @@ public class FileController {
         statsDClient.incrementCounter("endpoint.file.http.post");
 
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
-
         String[] parts = filename.split("\\.");
-
         String suffix = parts[parts.length - 1];
+
+        logger.info("Uploading file... File Name: " + filename);
         logger.info("Upload File Extension is: " + suffix);
 
         // file not allowed to store
         if (! EXTENSIONS.contains(suffix)) {
+            logger.error("File error");
             throw new AttachFileException("Attach File Error!");
         }
 
         Bill theBill = billService.findById(id);
-
         if (theBill == null || ! theBill.getOwnerId().equals(getCurrentUser().getId())) {
+            logger.error("Bill not found");
             throw new AttachFileException("Bill Not Found!");
         }
 
         File attachment = theBill.getAttachment();
-
         if (attachment != null) {
             storageService.deleteById(attachment.getId());
         }
 
         File theFile = storageService.store(id, file);
-
         return theFile;
     }
 
@@ -93,11 +93,13 @@ public class FileController {
         // current user id == bill owner id
         // bill attachment id == file id
         if (theBill == null || ! theBill.getOwnerId().equals(getCurrentUser().getId())) {
+            logger.error("File not found");
             throw new BillNotFoundException("Bill Not Found!");
         }
         if (theFile == null || theBill.getAttachment() == null
                 || theBill.getAttachment().getId() == null
                 || ! theBill.getAttachment().getId().equals(theFile.getId())) {
+            logger.warn("File not found");
             throw new StorageFileNotFoundException("File Not Found");
         }
         return theFile;
@@ -111,9 +113,8 @@ public class FileController {
         // 2. delete the attachment id inside bill database
         // 3. delete the physical file from server
         // 4. when delete a bill, the attached file should be deleted
-
         statsDClient.incrementCounter("endpoint.file.http.delete");
-
+        logger.info("Deleting file... Bill ID: " + id + " File ID: " + fileId);
         storageService.deleteById(fileId);
     }
 

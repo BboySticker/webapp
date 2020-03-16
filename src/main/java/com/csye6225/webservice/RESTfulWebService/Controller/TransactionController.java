@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.timgroup.statsd.StatsDClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -23,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 
 @RestController
@@ -38,29 +39,25 @@ public class TransactionController {
     @Autowired
     private StatsDClient statsDClient;
 
-    private Logger logger = Logger.getLogger(getClass().getName());
+    private Logger logger = LogManager.getLogger(getClass());
 
     @PostMapping("/v1/bill")
     @ResponseStatus(HttpStatus.CREATED)
     private @ResponseBody Bill createBill(@RequestBody Bill bill) {
 
         statsDClient.incrementCounter("endpoint.bill.http.post");
+        logger.info("Creating bill : " + bill.getId());
 
         // use helper function to get current authenticated user
         User currentUser = getCurrentUser();
-
         // set those read-only attributes: id, createdTs, updatedTs, ownerId
         bill.setId(UUID.randomUUID().toString());
-
         DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         bill.setCreatedTs(dateFormat.format(new Date()));
         bill.setUpdatedTs(dateFormat.format(new Date()));
-
         bill.setOwnerId(currentUser.getId());
-
         // save the bill
         Bill savedBill = billService.save(bill);
-
         return savedBill;
     }
 
@@ -68,6 +65,8 @@ public class TransactionController {
     public @ResponseBody List<Bill> getAllBills() {
 
         statsDClient.incrementCounter("endpoint.bills.http.get");
+        logger.info("Retrieving all bills");
+
         User currentUser = getCurrentUser();
         List<Bill> bills = billService.findAll(currentUser.getId());
         return bills;
@@ -77,13 +76,13 @@ public class TransactionController {
     private @ResponseBody Bill getBill(@PathVariable String id) {
 
         statsDClient.incrementCounter("endpoint.bill.http.get");
+        logger.info("Retrieving bill... ID: " + id);
 
         User currentUser = getCurrentUser();
-
         // get the bill by id
         Bill theBill = billService.findById(id);
-
         if (theBill == null || ! theBill.getOwnerId().equals(currentUser.getId())) {
+            logger.error("Bill: " + id + " not found");
             throw new BillNotFoundException("Bill Not Found!");
         }
         return theBill;
@@ -94,19 +93,17 @@ public class TransactionController {
     private void deleteBill(@PathVariable String id) {
 
         statsDClient.incrementCounter("endpoint.bill.http.delete");
+        logger.info("Deleting bill... ID: " + id);
 
         User currentUser = getCurrentUser();
-
-        logger.info("Deleting the bill which id: " + id);
-
         Bill theBill = billService.findById(id);
-
         // throw exception when:
         // 1. passed id not exist;
         // 2. ownerId field in bill object is null;
         // 3. bill's ownerId is not equal to currentUser's id
         if (theBill == null || theBill.getOwnerId() == null ||
                 ! theBill.getOwnerId().equals(currentUser.getId())) {
+            logger.error("Bill: " + id + " not found");
             throw new BillNotFoundException("Bill Not Found!");
         }
         billService.deleteById(id);
@@ -116,26 +113,21 @@ public class TransactionController {
     private @ResponseBody Bill updateBill(@RequestBody Bill bill, @PathVariable String id) {
 
         statsDClient.incrementCounter("endpoint.bill.http.put");
+        logger.info("Updating bill... ID: " + id);
 
         User currentUser = getCurrentUser();
-
         Bill theBill = billService.findById(id);
-
         if (theBill == null || ! currentUser.getId().equals(theBill.getOwnerId())) {
+            logger.error("Bill: " + id + " not found");
             throw new BillNotFoundException("Bill Not Found!");
         }
-
         // pass those four read-only fields
         bill.setId(id);
         bill.setCreatedTs(theBill.getCreatedTs());
-
         DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         bill.setUpdatedTs(dateFormat.format(new Date()));
-
         bill.setOwnerId(theBill.getOwnerId());
-
         billService.save(bill);
-
         return bill;
     }
 
@@ -152,7 +144,6 @@ public class TransactionController {
         if (user == null) {
             throw new UserNotFoundException("User Not Found!");
         }
-
         return user;
     }
 
@@ -165,11 +156,8 @@ public class TransactionController {
                         "billDate", "dueDate", "amountDue", "categories", "paymentStatus");
 
         FilterProvider filters = new SimpleFilterProvider().addFilter("BillFilter", filter);
-
         MappingJacksonValue mapping = new MappingJacksonValue(bill);
-
         mapping.setFilters(filters);
-
         return mapping;
     }
 
@@ -181,11 +169,8 @@ public class TransactionController {
                         "billDate", "dueDate", "amountDue", "categories", "paymentStatus");
 
         FilterProvider filters = new SimpleFilterProvider().addFilter("BillFilter", filter);
-
         MappingJacksonValue mapping = new MappingJacksonValue(bills);
-
         mapping.setFilters(filters);
-
         return mapping;
     }
 

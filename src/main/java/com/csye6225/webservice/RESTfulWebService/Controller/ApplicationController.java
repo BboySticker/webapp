@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.timgroup.statsd.StatsDClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -33,7 +33,7 @@ public class ApplicationController {
 
     private PasswordValidator passwordValidator = new PasswordValidator();
 
-    private Logger logger = LoggerFactory.getLogger(ApplicationController.class);
+    private Logger logger = LogManager.getLogger(getClass());
 
     @Autowired
     private StatsDClient statsDClient;
@@ -45,29 +45,25 @@ public class ApplicationController {
     @GetMapping("/v1/helloworld")
     public String helloWorld() {
         statsDClient.incrementCounter("endpoint.helloworld.http.get");
-        logger.info("This is a INFO level log.");
+        logger.info("This is a INFO level log");
         logger.warn("This is a WARN level log");
         logger.error("This is a ERROR level log");
         return "Hello World";
     }
 
-    @GetMapping("/users")
+    @GetMapping("/v1/users")
     public MappingJacksonValue findAll() {
 
         statsDClient.incrementCounter("endpoint.users.http.get");
+        logger.info("Retrieving all users");
 
         List<User> users = userService.findAll();
-
         SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
                 filterOutAllExcept("id", "username", "first_name", "last_name",
                         "email", "account_created", "account_updated");
-
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
-
         MappingJacksonValue mapping = new MappingJacksonValue(users);
-
         mapping.setFilters(filters);
-
         return mapping;
     }
 
@@ -78,16 +74,15 @@ public class ApplicationController {
         statsDClient.incrementCounter("endpoint.user.http.post");
 
         String username = user.getEmail_address();
-
         // check whether the username is valid
         if (!emailValidator.isValid(username, null)) {
             logger.warn("Invalid email!");
             throw new EmailInvalidException("Invalid email!");
         }
-
         // check whether the password is strong
         String password = user.getPassword();
         if (password.length() < 8 || !passwordValidator.isValid(password)) {
+            logger.warn("Password too weak");
             throw new WeakPasswordException("Password Too Weak!");
         }
 
@@ -99,12 +94,13 @@ public class ApplicationController {
             logger.warn("Username already exist!");
             throw new UserAlreadyExist("Username already exist!");
         }
-
         // set user attributes
         user.setId(UUID.randomUUID().toString());  // user id
         DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");  // set the date format
         user.setAccount_created(dateFormat.format(new Date()));
         User savedUser = userService.save(user);
+
+        logger.info("Creating user... ID: " + savedUser.getId());
 
         // set basic filter, avoid returning sensitive info such as password
         SimpleBeanPropertyFilter filter =
@@ -112,11 +108,8 @@ public class ApplicationController {
                         "email_address", "account_created", "account_updated");
 
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
-
         MappingJacksonValue mapping = new MappingJacksonValue(savedUser);
-
         mapping.setFilters(filters);
-
         return mapping;
     }
 
@@ -124,19 +117,16 @@ public class ApplicationController {
     public MappingJacksonValue findOne() {
 
         statsDClient.incrementCounter("endpoint.user.http.get");
+        logger.info("Retrieving current user");
 
         User user = getCurrentUser();
-
         SimpleBeanPropertyFilter filter =
                 SimpleBeanPropertyFilter.filterOutAllExcept("id", "first_name", "last_name",
                         "email_address", "account_created", "account_updated");
 
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
-
         MappingJacksonValue mapping = new MappingJacksonValue(user);
-
         mapping.setFilters(filters);
-
         return mapping;
     }
 
@@ -145,28 +135,29 @@ public class ApplicationController {
     public void update(@RequestBody User user) {
 
         statsDClient.incrementCounter("endpoint.user.http.put");
+        logger.info("Updating user...");
 
         if (user.getEmail_address() != null
                 || user.getAccount_created() != null
                 || user.getAccount_updated() != null) {
+            logger.warn("Updating user: Fields are not allowed to modify");
             throw new FieldRestrictedException("Fields not allowed to modify; " +
                     "Only can change FirstName, LastName and Password.");
         }
-
         String password = user.getPassword();
         if (password != null && (password.length() < 8 || !passwordValidator.isValid(password))) {
+            logger.warn("Password too weak");
             throw new WeakPasswordException("Password Too Weak!");
         }
-
         User old = getCurrentUser();
-
         // pass those static attributes
         user.setId(old.getId());
         user.setEmail_address(old.getEmail_address());
         user.setAccount_created(old.getAccount_created());
-
         // save the composed user
         userService.save(user);
+
+        logger.info("User updated. ID: " + old.getId());
     }
 
     // helper function to get current authenticated user
@@ -182,7 +173,6 @@ public class ApplicationController {
         if (user == null) {
             throw new UserNotFoundException("User Not Found!");
         }
-
         return user;
     }
 

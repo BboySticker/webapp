@@ -78,11 +78,8 @@ public class FileController {
             storageService.deleteById(attachment.getId());
         }
 
-        // count the time of db call
-        long startTime = System.currentTimeMillis();
+        // timer is inside StorageService
         File theFile = storageService.store(id, file);
-        long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.post", endTime - startTime);
 
         // count the time of api call
         long apiEndTime = System.currentTimeMillis();

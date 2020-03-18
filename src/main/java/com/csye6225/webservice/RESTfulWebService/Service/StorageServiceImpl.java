@@ -6,6 +6,7 @@ import com.csye6225.webservice.RESTfulWebService.Dao.StorageDao;
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill.File;
 import com.csye6225.webservice.RESTfulWebService.Exception.StorageException;
 import com.csye6225.webservice.RESTfulWebService.Exception.StorageFileNotFoundException;
+import com.timgroup.statsd.StatsDClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ public class StorageServiceImpl implements StorageService {
     @Autowired
     private S3Services s3Services;
 
+    @Autowired
+    private StatsDClient statsDClient;
 
     @Autowired
     public StorageServiceImpl(StorageProperties properties, StorageDao storageDao, UserService userService) {
@@ -84,7 +87,6 @@ public class StorageServiceImpl implements StorageService {
             catch (IOException e) {
                 throw new StorageException("Failed to store file " + filename, e);
             }
-
             return theFile;
         }
         else if (PROFILE_NAME.equalsIgnoreCase("aws")) {
@@ -95,8 +97,13 @@ public class StorageServiceImpl implements StorageService {
 
                 PutObjectResult obj = s3Services.uploadFile(keyName, file);
 
+                // time the db call
+                long startTime = System.currentTimeMillis();
+                File theFile = storageDao.store(billId, file, keyName, obj);
+                long endTime = System.currentTimeMillis();
+                statsDClient.recordExecutionTime("db.ops.endpoint.file.http.post", endTime - startTime);
                 // attach the file to bill
-                return storageDao.store(billId, file, keyName, obj);
+                return theFile;
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -105,7 +112,6 @@ public class StorageServiceImpl implements StorageService {
                 e.printStackTrace();
             }
         }
-
         return null;
     }
 

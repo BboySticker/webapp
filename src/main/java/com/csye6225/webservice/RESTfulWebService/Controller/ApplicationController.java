@@ -71,6 +71,7 @@ public class ApplicationController {
     @ResponseStatus(HttpStatus.CREATED)
     public MappingJacksonValue createUser(@RequestBody User user) {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.user.http.post");
 
         String username = user.getEmail_address();
@@ -98,7 +99,11 @@ public class ApplicationController {
         user.setId(UUID.randomUUID().toString());  // user id
         DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");  // set the date format
         user.setAccount_created(dateFormat.format(new Date()));
+
+        long startTime = System.currentTimeMillis();
         User savedUser = userService.save(user);
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.user.http.post", startTime - endTime);
 
         logger.info("Creating user... ID: " + savedUser.getId());
 
@@ -110,16 +115,25 @@ public class ApplicationController {
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
         MappingJacksonValue mapping = new MappingJacksonValue(savedUser);
         mapping.setFilters(filters);
+
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.user.http.post", apiStartTime - apiEndTime);
+
         return mapping;
     }
 
     @GetMapping("/v1/user/self")
     public MappingJacksonValue findOne() {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.user.http.get");
         logger.info("Retrieving current user");
 
+        long startTime = System.currentTimeMillis();
         User user = getCurrentUser();
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.user.http.get", startTime - endTime);
+
         SimpleBeanPropertyFilter filter =
                 SimpleBeanPropertyFilter.filterOutAllExcept("id", "first_name", "last_name",
                         "email_address", "account_created", "account_updated");
@@ -127,6 +141,9 @@ public class ApplicationController {
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
         MappingJacksonValue mapping = new MappingJacksonValue(user);
         mapping.setFilters(filters);
+
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.user.http.get", apiStartTime - apiEndTime);
         return mapping;
     }
 
@@ -134,6 +151,7 @@ public class ApplicationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody User user) {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.user.http.put");
         logger.info("Updating user...");
 
@@ -154,10 +172,17 @@ public class ApplicationController {
         user.setId(old.getId());
         user.setEmail_address(old.getEmail_address());
         user.setAccount_created(old.getAccount_created());
+
+        long startTime = System.currentTimeMillis();
         // save the composed user
         userService.save(user);
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.user.http.put", startTime - endTime);
 
         logger.info("User updated. ID: " + old.getId());
+
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.user.http.put", apiStartTime - apiEndTime);
     }
 
     // helper function to get current authenticated user

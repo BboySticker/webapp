@@ -51,6 +51,7 @@ public class FileController {
     @PostMapping("/v1/bill/{id}/file")
     private @ResponseBody File attachFile(@PathVariable String id, @RequestParam("file") MultipartFile file) throws IOException {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.file.http.post");
 
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
@@ -77,7 +78,15 @@ public class FileController {
             storageService.deleteById(attachment.getId());
         }
 
+        // count the time of db call
+        long startTime = System.currentTimeMillis();
         File theFile = storageService.store(id, file);
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.post", startTime - endTime);
+
+        // count the time of api call
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.file.http.post", apiStartTime - apiEndTime);
         return theFile;
     }
 
@@ -85,10 +94,15 @@ public class FileController {
     @ResponseStatus(HttpStatus.OK)
     private @ResponseBody File getFile(@PathVariable String id, @PathVariable String fileId) {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.file.http.get");
 
         Bill theBill = billService.findById(id);
+        // count the time of db call
+        long startTime = System.currentTimeMillis();
         File theFile = storageService.findById(fileId);
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.get", startTime - endTime);
 
         // current user id == bill owner id
         // bill attachment id == file id
@@ -102,6 +116,9 @@ public class FileController {
             logger.warn("File not found");
             throw new StorageFileNotFoundException("File Not Found");
         }
+        // count the time of api call
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.file.http.get", apiStartTime - apiEndTime);
         return theFile;
     }
 
@@ -113,9 +130,19 @@ public class FileController {
         // 2. delete the attachment id inside bill database
         // 3. delete the physical file from server
         // 4. when delete a bill, the attached file should be deleted
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.file.http.delete");
         logger.info("Deleting file... Bill ID: " + id + " File ID: " + fileId);
+
+        // count the time of db call
+        long startTime = System.currentTimeMillis();
         storageService.deleteById(fileId);
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.delete", startTime - endTime);
+
+        // count the time of api call
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.file.http.delete", apiStartTime - apiEndTime);
     }
 
     // helper function to get current authenticated user

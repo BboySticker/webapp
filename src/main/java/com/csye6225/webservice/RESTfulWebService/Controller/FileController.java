@@ -82,11 +82,11 @@ public class FileController {
         long startTime = System.currentTimeMillis();
         File theFile = storageService.store(id, file);
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.post", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.post", endTime - startTime);
 
         // count the time of api call
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.file.http.post", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.file.http.post", apiEndTime - apiStartTime);
         return theFile;
     }
 
@@ -102,7 +102,7 @@ public class FileController {
         long startTime = System.currentTimeMillis();
         File theFile = storageService.findById(fileId);
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.get", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.get", endTime - startTime);
 
         // current user id == bill owner id
         // bill attachment id == file id
@@ -118,7 +118,7 @@ public class FileController {
         }
         // count the time of api call
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.file.http.get", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.file.http.get", apiEndTime - apiStartTime);
         return theFile;
     }
 
@@ -138,11 +138,11 @@ public class FileController {
         long startTime = System.currentTimeMillis();
         storageService.deleteById(fileId);
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.delete", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.file.http.delete", endTime - startTime);
 
         // count the time of api call
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.file.http.delete", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.file.http.delete", apiEndTime - apiStartTime);
     }
 
     // helper function to get current authenticated user

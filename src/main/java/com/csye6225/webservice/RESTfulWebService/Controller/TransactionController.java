@@ -47,7 +47,7 @@ public class TransactionController {
 
         long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.bill.http.post");
-        logger.info("Creating bill : " + bill.getId());
+        logger.info("Creating bill...");
 
         // use helper function to get current authenticated user
         User currentUser = getCurrentUser();
@@ -61,10 +61,10 @@ public class TransactionController {
         long startTime = System.currentTimeMillis();
         Bill savedBill = billService.save(bill);
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.post", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.post", endTime - startTime);
 
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.post", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.post", apiEndTime - apiStartTime);
 
         return savedBill;
     }
@@ -81,10 +81,10 @@ public class TransactionController {
         long startTime = System.currentTimeMillis();
         List<Bill> bills = billService.findAll(currentUser.getId());
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.bills.http.get", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.bills.http.get", endTime - startTime);
 
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.bills.http.get", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.bills.http.get", apiEndTime - apiStartTime);
 
         return bills;
     }
@@ -101,14 +101,14 @@ public class TransactionController {
         long startTime = System.currentTimeMillis();
         Bill theBill = billService.findById(id);
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.get", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.get", endTime - startTime);
 
         if (theBill == null || ! theBill.getOwnerId().equals(currentUser.getId())) {
             logger.error("Bill: " + id + " not found");
             throw new BillNotFoundException("Bill Not Found!");
         }
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.get", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.get", apiEndTime - apiStartTime);
 
         return theBill;
     }
@@ -135,10 +135,10 @@ public class TransactionController {
         long startTime = System.currentTimeMillis();
         billService.deleteById(id);
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.delete", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.delete", endTime - startTime);
 
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.delete", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.delete", apiEndTime - apiStartTime);
     }
 
     @PutMapping("/v1/bill/{id}")
@@ -164,10 +164,10 @@ public class TransactionController {
         long startTime = System.currentTimeMillis();
         billService.save(bill);
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.put", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.put", endTime - startTime);
 
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.put", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.put", apiEndTime - apiStartTime);
         return bill;
     }
 

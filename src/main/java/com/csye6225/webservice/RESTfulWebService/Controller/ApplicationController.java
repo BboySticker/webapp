@@ -103,7 +103,7 @@ public class ApplicationController {
         long startTime = System.currentTimeMillis();
         User savedUser = userService.save(user);
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.user.http.post", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.user.http.post", endTime - startTime);
 
         logger.info("Creating user... ID: " + savedUser.getId());
 
@@ -117,7 +117,7 @@ public class ApplicationController {
         mapping.setFilters(filters);
 
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.user.http.post", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.user.http.post", apiEndTime - apiStartTime);
 
         return mapping;
     }
@@ -132,7 +132,7 @@ public class ApplicationController {
         long startTime = System.currentTimeMillis();
         User user = getCurrentUser();
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.user.http.get", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.user.http.get", endTime - startTime);
 
         SimpleBeanPropertyFilter filter =
                 SimpleBeanPropertyFilter.filterOutAllExcept("id", "first_name", "last_name",
@@ -143,7 +143,7 @@ public class ApplicationController {
         mapping.setFilters(filters);
 
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.user.http.get", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.user.http.get", apiEndTime - apiStartTime);
         return mapping;
     }
 
@@ -177,12 +177,12 @@ public class ApplicationController {
         // save the composed user
         userService.save(user);
         long endTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("db.ops.endpoint.user.http.put", startTime - endTime);
+        statsDClient.recordExecutionTime("db.ops.endpoint.user.http.put", endTime - startTime);
 
         logger.info("User updated. ID: " + old.getId());
 
         long apiEndTime = System.currentTimeMillis();
-        statsDClient.recordExecutionTime("api.ops.endpoint.user.http.put", apiStartTime - apiEndTime);
+        statsDClient.recordExecutionTime("api.ops.endpoint.user.http.put", apiEndTime - apiStartTime);
     }
 
     // helper function to get current authenticated user

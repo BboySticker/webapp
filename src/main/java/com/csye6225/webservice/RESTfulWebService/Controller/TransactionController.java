@@ -45,6 +45,7 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.CREATED)
     private @ResponseBody Bill createBill(@RequestBody Bill bill) {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.bill.http.post");
         logger.info("Creating bill : " + bill.getId());
 
@@ -56,35 +57,59 @@ public class TransactionController {
         bill.setCreatedTs(dateFormat.format(new Date()));
         bill.setUpdatedTs(dateFormat.format(new Date()));
         bill.setOwnerId(currentUser.getId());
-        // save the bill
+
+        long startTime = System.currentTimeMillis();
         Bill savedBill = billService.save(bill);
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.post", startTime - endTime);
+
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.post", apiStartTime - apiEndTime);
+
         return savedBill;
     }
 
     @GetMapping("/v1/bills")
     public @ResponseBody List<Bill> getAllBills() {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.bills.http.get");
         logger.info("Retrieving all bills");
 
         User currentUser = getCurrentUser();
+
+        long startTime = System.currentTimeMillis();
         List<Bill> bills = billService.findAll(currentUser.getId());
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.bills.http.get", startTime - endTime);
+
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.bills.http.get", apiStartTime - apiEndTime);
+
         return bills;
     }
 
     @GetMapping("/v1/bill/{id}")
     private @ResponseBody Bill getBill(@PathVariable String id) {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.bill.http.get");
         logger.info("Retrieving bill... ID: " + id);
 
         User currentUser = getCurrentUser();
-        // get the bill by id
+
+        long startTime = System.currentTimeMillis();
         Bill theBill = billService.findById(id);
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.get", startTime - endTime);
+
         if (theBill == null || ! theBill.getOwnerId().equals(currentUser.getId())) {
             logger.error("Bill: " + id + " not found");
             throw new BillNotFoundException("Bill Not Found!");
         }
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.get", apiStartTime - apiEndTime);
+
         return theBill;
     }
 
@@ -92,6 +117,7 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     private void deleteBill(@PathVariable String id) {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.bill.http.delete");
         logger.info("Deleting bill... ID: " + id);
 
@@ -106,12 +132,19 @@ public class TransactionController {
             logger.error("Bill: " + id + " not found");
             throw new BillNotFoundException("Bill Not Found!");
         }
+        long startTime = System.currentTimeMillis();
         billService.deleteById(id);
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.delete", startTime - endTime);
+
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.delete", apiStartTime - apiEndTime);
     }
 
     @PutMapping("/v1/bill/{id}")
     private @ResponseBody Bill updateBill(@RequestBody Bill bill, @PathVariable String id) {
 
+        long apiStartTime = System.currentTimeMillis();
         statsDClient.incrementCounter("endpoint.bill.http.put");
         logger.info("Updating bill... ID: " + id);
 
@@ -127,7 +160,14 @@ public class TransactionController {
         DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         bill.setUpdatedTs(dateFormat.format(new Date()));
         bill.setOwnerId(theBill.getOwnerId());
+
+        long startTime = System.currentTimeMillis();
         billService.save(bill);
+        long endTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("db.ops.endpoint.bill.http.put", startTime - endTime);
+
+        long apiEndTime = System.currentTimeMillis();
+        statsDClient.recordExecutionTime("api.ops.endpoint.bill.http.put", apiStartTime - apiEndTime);
         return bill;
     }
 

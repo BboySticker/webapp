@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.csye6225.webservice.RESTfulWebService.Utils.ConvertFromMultipart;
+import com.timgroup.statsd.StatsDClient;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ public class S3ServicesImpl implements S3Services {
     @Autowired
     private AmazonS3 s3client;
 
+    @Autowired
+    private StatsDClient statsDClient;
+
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
 
@@ -41,7 +45,10 @@ public class S3ServicesImpl implements S3Services {
             metadata.addUserMetadata("x-amz-meta-title", theFile.getName());
             request.setMetadata(metadata);
 
+            long s3StartTime = System.currentTimeMillis();
             PutObjectResult obj = s3client.putObject(request);
+            long s3EndTime = System.currentTimeMillis();
+            statsDClient.recordExecutionTime("s3.ops.endpoint.file.upload", s3EndTime - s3StartTime);
 
             logger.info("===================== Upload File - Done! =====================");
 
@@ -67,7 +74,10 @@ public class S3ServicesImpl implements S3Services {
     public void deleteFile(String keyName) {
 
         try {
+            long s3StartTime = System.currentTimeMillis();
             s3client.deleteObject(new DeleteObjectRequest(bucketName, keyName));
+            long s3EndTime = System.currentTimeMillis();
+            statsDClient.recordExecutionTime("s3.ops.endpoint.file.delete", s3EndTime - s3StartTime);
             logger.info("===================== Download File - Done! =====================");
         }
         catch (AmazonServiceException ase) {

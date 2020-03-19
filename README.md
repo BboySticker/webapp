@@ -1,20 +1,24 @@
 # webapp
-Repo for CSYE6225 Cloud Computing.
+Repo for CSYE6225 Cloud Computing. \
+Here is a set of APIs that build by using Spring Boot.
 
-# Prerequisites:
+## Prerequisites:
 
-Programming Language: Java 12
-
-Frameworks: Spring-Boot, Spring-Security
-
-IDE: IntelliJ IDEA
-
+Programming Language: Java 12 \
+Frameworks: Spring, Spring Boot, Spring Security, Hibernate, MySQL \
+IDE: IntelliJ IDEA \
 Server: Tomcat 9
 
 
-# Build:
+## Build:
 
-Open the project by using IntelliJ IDEA
+1. Clone this repo to local. 
 
-Config project by adding new configuration of Spring-Boot 
+2. Import the project to IntelliJ IDEA. \
+Make sure you installed Maven.
 
+3. Set up database. \
+The project run on local MySQL server by default. \
+Make sure you have a MySQL server run on localhost:3306.
+
+4. Use IntelliJ IDEA Maven tool to build. 

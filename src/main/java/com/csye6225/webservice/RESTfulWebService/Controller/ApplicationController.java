@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,11 +45,18 @@ public class ApplicationController {
     }
 
     @GetMapping("/v1/helloworld")
-    public String helloWorld() {
+    public String helloWorld() throws UnknownHostException {
         statsDClient.incrementCounter("endpoint.helloworld.http.get");
         logger.info("This is a INFO level log");
         logger.warn("This is a WARN level log");
         logger.error("This is a ERROR level log");
+        try {
+            String ip = InetAddress.getLocalHost().getHostAddress();
+            logger.info("Loaclhost:" + ip);
+        }
+        catch (UnknownHostException ex) {
+            logger.warn(ex.getMessage());
+        }
         return "Hello World";
     }
 

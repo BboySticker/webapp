@@ -121,7 +121,7 @@ create table if not exists record
 	id varchar(40) not null
 		primary key,
 	owner_id varchar(40) not null,
-	due_bill varchar(40) not null
+	due_bill varchar(40) null
 );
 
 

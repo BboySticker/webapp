@@ -110,3 +110,18 @@ create table if not exists recipe_ingredients
 	ingredients varchar(255) null
 );
 
+create table if not exists record_duebills
+(
+	record_id varchar(40) not null,
+	due_bill varchar(40) not null
+);
+
+create table if not exists record
+(
+	id varchar(40) not null
+		primary key,
+	owner_id varchar(40) not null,
+	due_bill varchar(40) not null
+);
+
+

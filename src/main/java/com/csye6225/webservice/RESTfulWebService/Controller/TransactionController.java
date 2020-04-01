@@ -6,6 +6,7 @@ import com.csye6225.webservice.RESTfulWebService.Entity.User.User;
 import com.csye6225.webservice.RESTfulWebService.Exception.BillNotFoundException;
 import com.csye6225.webservice.RESTfulWebService.Exception.UserNotFoundException;
 import com.csye6225.webservice.RESTfulWebService.Service.BillService;
+import com.csye6225.webservice.RESTfulWebService.Service.SQSService;
 import com.csye6225.webservice.RESTfulWebService.Service.UserService;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -34,12 +35,31 @@ public class TransactionController {
     private BillService billService;
 
     @Autowired
+    private SQSService sqsService;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
     private StatsDClient statsDClient;
 
     private Logger logger = LogManager.getLogger(getClass());
+
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    @GetMapping("/v1/bills/due/{days}")
+    @ResponseStatus(HttpStatus.CREATED)
+    private void getBillsDue(@PathVariable String days) {
+
+        String recordId = billService.getBillsDue(getCurrentUser().getId(), Integer.parseInt(days));
+        sqsService.putMessage(recordId, getCurrentUser().getId());
+    }
+
+    @GetMapping("/v1/bills/{recordId}")
+    private @ResponseBody List<Bill> getRecord(@PathVariable String recordId) {
+
+        return null;
+    }
 
     @PostMapping("/v1/bill")
     @ResponseStatus(HttpStatus.CREATED)
@@ -53,7 +73,6 @@ public class TransactionController {
         User currentUser = getCurrentUser();
         // set those read-only attributes: id, createdTs, updatedTs, ownerId
         bill.setId(UUID.randomUUID().toString());
-        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         bill.setCreatedTs(dateFormat.format(new Date()));
         bill.setUpdatedTs(dateFormat.format(new Date()));
         bill.setOwnerId(currentUser.getId());
@@ -165,7 +184,6 @@ public class TransactionController {
         // pass those four read-only fields
         bill.setId(id);
         bill.setCreatedTs(theBill.getCreatedTs());
-        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         bill.setUpdatedTs(dateFormat.format(new Date()));
         bill.setOwnerId(theBill.getOwnerId());
 

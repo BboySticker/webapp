@@ -21,6 +21,7 @@ public class StorageDaoImpl implements StorageDao {
 
     private SessionFactory sessionFactory;
     private BillDao billDao;
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     public StorageDaoImpl(SessionFactory sessionFactory, BillDao billDao) {
@@ -43,7 +44,6 @@ public class StorageDaoImpl implements StorageDao {
         theFile.setFileName(file.getOriginalFilename());
         theFile.setUrl(location.toFile().getAbsolutePath());
 
-        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         theFile.setUploadDate(dateFormat.format(new Date()));
 
         theFile.setBillId(theBill.getId());
@@ -70,7 +70,6 @@ public class StorageDaoImpl implements StorageDao {
 
         File theFile = new File();
 
-        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         theFile.setUploadDate(dateFormat.format(new Date()));
         theFile.setId(fileId);
         theFile.setFileName(file.getOriginalFilename());
@@ -97,7 +96,6 @@ public class StorageDaoImpl implements StorageDao {
 
         File theFile = new File();
 
-        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         theFile.setUploadDate(dateFormat.format(new Date()));
         theFile.setId(fileId);
         theFile.setFileName(file.getOriginalFilename());

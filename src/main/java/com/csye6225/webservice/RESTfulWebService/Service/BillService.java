@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface BillService {
 
+    String getBillsDue(String userId, int numOfDays);
+
     Bill findById(String id);
 
     List<Bill> findAll(String userId);

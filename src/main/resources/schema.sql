@@ -116,8 +116,6 @@ create table if not exists record_duebills
 	due_bill varchar(40) not null
 );
 
-drop table if exists record;
-
 create table if not exists record
 (
 	id varchar(40) not null

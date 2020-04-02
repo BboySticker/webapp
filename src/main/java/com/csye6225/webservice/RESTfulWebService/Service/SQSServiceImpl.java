@@ -25,6 +25,9 @@ public class SQSServiceImpl implements SQSService {
     @Value("${aws.sqs.url}")
     private String sqsUrl;
 
+    @Value("${aws.server.domain}")
+    private String domain;
+
     @Autowired
     @Qualifier("myTaskExecutor")
     private TaskExecutor taskExecutor;
@@ -61,9 +64,6 @@ public class SQSServiceImpl implements SQSService {
     private void init() {
         logger.info("Start running background thread to poll AWS SQS messages...");
         taskExecutor.execute(new Runnable() {
-            @Value("${aws.server.domain}")
-            private String domain;
-
             @Override
             @lombok.SneakyThrows
             public void run() {
@@ -71,7 +71,7 @@ public class SQSServiceImpl implements SQSService {
                     // once SQS has message, trigger SNS service
                     List<Message> messages = pollMessages();
                     for (Message message: messages) {
-                        Map<String, Object> map = new ObjectMapper().readValue(message.getBody(), HashMap.class);
+                        Map<String, String> map = new ObjectMapper().readValue(message.getBody(), HashMap.class);
                         map.put("domain", domain);
                         logger.info("Successfully obtain message from AWS SQS...");
                         logger.info("Message body: " + map.toString());

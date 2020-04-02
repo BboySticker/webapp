@@ -52,7 +52,7 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.CREATED)
     private void getBillsDue(@PathVariable String days) {
         String recordId = billService.getBillsDue(getCurrentUser().getId(), Integer.parseInt(days));
-        sqsService.putMessage(recordId, getCurrentUser().getId());
+        sqsService.putMessage(recordId, getCurrentUser().getEmail_address());
     }
 
     @GetMapping("/v1/bills/{recordId}")

@@ -78,14 +78,4 @@ public class ApplicationConfiguration {
         return new SimpleAsyncTaskExecutor();
     }
 
-//    @Autowired
-//    @PostConstruct
-//    public CommandLineRunner schedulingRunner(@Qualifier("myTaskExecutor") TaskExecutor executor) {
-//        return new CommandLineRunner() {
-//            public void run(String... args) throws Exception {
-//                executor.execute(new SQSServiceImpl());
-//            }
-//        };
-//    }
-
 }

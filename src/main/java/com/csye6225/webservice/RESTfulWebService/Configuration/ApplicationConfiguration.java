@@ -19,6 +19,7 @@ import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -77,13 +78,14 @@ public class ApplicationConfiguration {
         return new SimpleAsyncTaskExecutor();
     }
 
-    @Bean
-    public CommandLineRunner schedulingRunner(@Qualifier("myTaskExecutor") TaskExecutor executor) {
-        return new CommandLineRunner() {
-            public void run(String... args) throws Exception {
-                executor.execute(new SQSServiceImpl());
-            }
-        };
-    }
+//    @Autowired
+//    @PostConstruct
+//    public CommandLineRunner schedulingRunner(@Qualifier("myTaskExecutor") TaskExecutor executor) {
+//        return new CommandLineRunner() {
+//            public void run(String... args) throws Exception {
+//                executor.execute(new SQSServiceImpl());
+//            }
+//        };
+//    }
 
 }

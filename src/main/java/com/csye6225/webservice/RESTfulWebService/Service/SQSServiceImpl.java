@@ -61,6 +61,9 @@ public class SQSServiceImpl implements SQSService {
     private void init() {
         logger.info("Start running background thread to poll AWS SQS messages...");
         taskExecutor.execute(new Runnable() {
+            @Value("${aws.server.domain}")
+            private String domain;
+
             @Override
             @lombok.SneakyThrows
             public void run() {
@@ -69,12 +72,12 @@ public class SQSServiceImpl implements SQSService {
                     List<Message> messages = pollMessages();
                     for (Message message: messages) {
                         Map<String, Object> map = new ObjectMapper().readValue(message.getBody(), HashMap.class);
+                        map.put("domain", domain);
                         logger.info("Successfully obtain message from AWS SQS...");
                         logger.info("Message body: " + map.toString());
-                        String recordId = (String) map.get("recordId");
-                        String ownerEmail = (String) map.get("ownerEmail");
-//                        snsService.publishRequest(message.getBody());
                         snsService.publishRequest(new JSONObject(map).toString());
+                        deleteMessage(message);
+                        logger.info("Successfully delete message from AWS SQS...");
                     }
                 }
             }

@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface BillDao {
 
+    List<String> getBillsDue(String recordId);
+
     String getBillsDue(String userId, int numOfDays);
 
     Bill findById(String id);

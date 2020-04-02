@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -50,15 +51,21 @@ public class TransactionController {
     @GetMapping("/v1/bills/due/{days}")
     @ResponseStatus(HttpStatus.CREATED)
     private void getBillsDue(@PathVariable String days) {
-
         String recordId = billService.getBillsDue(getCurrentUser().getId(), Integer.parseInt(days));
         sqsService.putMessage(recordId, getCurrentUser().getId());
     }
 
     @GetMapping("/v1/bills/{recordId}")
     private @ResponseBody List<Bill> getRecord(@PathVariable String recordId) {
-
-        return null;
+        List<String> dueBillsId = billService.getBillsDue(recordId);
+        if (dueBillsId == null) {
+            throw new BillNotFoundException("Bill Not Found!");
+        }
+        List<Bill> dueBills = new ArrayList<>();
+        for (String billId: dueBillsId) {
+            dueBills.add(billService.findById(billId));
+        }
+        return dueBills;
     }
 
     @PostMapping("/v1/bill")
@@ -90,7 +97,6 @@ public class TransactionController {
 
     @GetMapping("/v2/bills")
     public @ResponseBody List<Bill> getAllBillsV2() {
-
         User currentUser = getCurrentUser();
         List<Bill> bills = billService.findAll(currentUser.getId());
         return bills;

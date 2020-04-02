@@ -27,6 +27,12 @@ public class BillServiceImpl implements BillService {
 
     @Override
     @Transactional
+    public List<String> getBillsDue(String recordId) {
+        return billDao.getBillsDue(recordId);
+    }
+
+    @Override
+    @Transactional
     public String getBillsDue(String userId, int numOfDays) {
         return billDao.getBillsDue(userId, numOfDays);
     }

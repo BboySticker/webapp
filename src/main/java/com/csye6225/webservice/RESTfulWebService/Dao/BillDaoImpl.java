@@ -33,6 +33,13 @@ public class BillDaoImpl implements BillDao {
     }
 
     @Override
+    public List<String> getBillsDue(String recordId) {
+        Session currentSession = sessionFactory.getCurrentSession();
+        DueBillRecord record = currentSession.get(DueBillRecord.class, recordId);
+        return record.getDueBills();
+    }
+
+    @Override
     public String getBillsDue(String userId, int numOfDays) {
 
         List<Bill> bills = this.findAll(userId);
@@ -42,14 +49,6 @@ public class BillDaoImpl implements BillDao {
         logger.info("Start obtain due bills of user: " + userId + "; within " + numOfDays + " days.");
         logger.info("Today: " + today.toString());
         logger.info("Today's timestamp: " + today.getTime());
-//        Date testDueDate = new Date();
-//        try {
-//            testDueDate = dateFormat.parse("2020-04-15");
-//        } catch (ParseException ex) {
-//            ex.printStackTrace();
-//        }
-//        logger.info("Test bill due date: " + testDueDate.toString());
-//        logger.info("Test bill due date timestamp: " + testDueDate.getTime());
         try {
             for (Bill bill: bills) {
                 Date date = dateFormat.parse(bill.getDueDate());

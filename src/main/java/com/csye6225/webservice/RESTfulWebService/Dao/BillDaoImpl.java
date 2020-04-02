@@ -1,14 +1,23 @@
 package com.csye6225.webservice.RESTfulWebService.Dao;
 
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill.Bill;
+import com.csye6225.webservice.RESTfulWebService.Entity.Bill.DueBillRecord;
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill.File;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class BillDaoImpl implements BillDao {
@@ -16,9 +25,57 @@ public class BillDaoImpl implements BillDao {
     // inject the session factory
     private SessionFactory sessionFactory;
 
+    private Logger logger = LogManager.getLogger(getClass());
+
     @Autowired
     public BillDaoImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    @Override
+    public List<String> getBillsDue(String recordId) {
+        Session currentSession = sessionFactory.getCurrentSession();
+        DueBillRecord record = currentSession.get(DueBillRecord.class, recordId);
+        return record.getDueBills();
+    }
+
+    @Override
+    public String getBillsDue(String userId, int numOfDays) {
+
+        List<Bill> bills = this.findAll(userId);
+        List<String> dueBills = new ArrayList<>();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date today = new Date();
+        logger.info("Start obtain due bills of user: " + userId + "; within " + numOfDays + " days.");
+        logger.info("Today: " + today.toString());
+        logger.info("Today's timestamp: " + today.getTime());
+        try {
+            for (Bill bill: bills) {
+                Date date = dateFormat.parse(bill.getDueDate());
+                if (((date.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)) > 0
+                        && ((date.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)) <= numOfDays) {
+                    dueBills.add(bill.getId());
+                    logger.info("Successfully obtained due bill: " + bill.getId());
+                }
+            }
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        logger.info("Finish obtain due bills of user: " + userId + "; within " + numOfDays + " days.");
+        if (dueBills.size() == 0) {
+            logger.info("No due bills for user: " + userId + " within " + numOfDays + " days.");
+            return "N/A";
+        }
+        DueBillRecord dueBillRecord = new DueBillRecord();
+        dueBillRecord.setId(UUID.randomUUID().toString());
+        dueBillRecord.setOwnerId(userId);
+        dueBillRecord.setDueBills(dueBills);
+
+        Session currentSession = sessionFactory.getCurrentSession();
+        currentSession.save(dueBillRecord);
+        return dueBillRecord.getId();
     }
 
     @Override

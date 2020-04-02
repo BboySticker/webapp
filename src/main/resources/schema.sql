@@ -1,16 +1,4 @@
-DROP TABLE IF EXISTS `users`;
-DROP TABLE IF EXISTS `authorities`;
-DROP TABLE IF EXISTS `user`;
-DROP TABLE IF EXISTS `bill`;
-DROP TABLE IF EXISTS `bill_categories`;
-DROP TABLE IF EXISTS `file`;
-DROP TABLE IF EXISTS `image`;
-DROP TABLE IF EXISTS `nutrition_information`;
-DROP TABLE IF EXISTS `ordered_list`;
-DROP TABLE IF EXISTS `recipe`;
-DROP TABLE IF EXISTS `recipe_ingredients`;
-
-create table users
+create table if not exists users
 (
 	username varchar(50) not null
 		primary key,
@@ -18,7 +6,7 @@ create table users
 	enabled tinyint(1) not null
 );
 
-create table user
+create table if not exists user
 (
 	id char(40) null,
 	first_name varchar(20) null,
@@ -29,13 +17,13 @@ create table user
 	account_updated char(30) null
 );
 
-create table authorities
+create table if not exists authorities
 (
 	username varchar(50) not null,
 	authority varchar(50) not null
 );
 
-create table bill
+create table if not exists bill
 (
 	id char(40) null,
 	created_ts char(40) null,
@@ -50,13 +38,13 @@ create table bill
 	attachment_id char(50) null
 );
 
-create table bill_categories
+create table if not exists bill_categories
 (
 	bill_id char(60) null,
 	categories char(20) null
 );
 
-create table file
+create table if not exists file
 (
 	id char(50) not null
 		primary key,
@@ -70,14 +58,14 @@ create table file
 );
 
 
-create table image
+create table if not exists image
 (
 	id varchar(50) not null
 		primary key,
 	url varchar(255) null
 );
 
-create table nutrition_information
+create table if not exists nutrition_information
 (
 	id varchar(50) not null
 		primary key,
@@ -88,7 +76,7 @@ create table nutrition_information
 	protein_in_grams float null
 );
 
-create table ordered_list
+create table if not exists ordered_list
 (
 	id varchar(50) not null
 		primary key,
@@ -97,7 +85,7 @@ create table ordered_list
 	recipe_id varchar(50) null
 );
 
-create table recipe
+create table if not exists recipe
 (
 	id varchar(50) not null
 		primary key,
@@ -116,9 +104,24 @@ create table recipe
 	nutrition_information varchar(50) null
 );
 
-create table recipe_ingredients
+create table if not exists recipe_ingredients
 (
 	recipe_id varchar(50) null,
 	ingredients varchar(255) null
 );
+
+create table if not exists record_duebills
+(
+	record_id varchar(40) not null,
+	due_bill varchar(40) not null
+);
+
+create table if not exists record
+(
+	id varchar(40) not null
+		primary key,
+	owner_id varchar(40) not null,
+	due_bill varchar(40) null
+);
+
 

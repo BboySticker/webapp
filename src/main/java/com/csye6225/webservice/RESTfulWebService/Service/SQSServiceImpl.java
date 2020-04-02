@@ -29,12 +29,15 @@ public class SQSServiceImpl implements SQSService {
     @Qualifier("myTaskExecutor")
     private TaskExecutor taskExecutor;
 
+    @Autowired
+    private SNSService snsService;
+
     private Logger logger = LogManager.getLogger(getClass());
 
-    public void putMessage(String recordId, String ownerId) {
+    public void putMessage(String recordId, String ownerEmail) {
         Map<String, Object> map = new HashMap<>();
         map.put("recordId", recordId);
-        map.put("ownerId", ownerId);
+        map.put("ownerEmail", ownerEmail);
 
         AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
         SendMessageRequest send_msg_request = new SendMessageRequest()
@@ -68,24 +71,13 @@ public class SQSServiceImpl implements SQSService {
                         Map<String, Object> map = new ObjectMapper().readValue(message.getBody(), HashMap.class);
                         logger.info("Successfully obtain message from AWS SQS...");
                         logger.info("Message body: " + map.toString());
+                        String recordId = (String) map.get("recordId");
+                        String ownerEmail = (String) map.get("ownerEmail");
+//                        snsService.publishRequest(message.getBody());
+                        snsService.publishRequest(new JSONObject(map).toString());
                     }
                 }
             }
         });
     }
-
-//    @lombok.SneakyThrows
-//    @Override
-//    public void run() {
-//        while (true) {
-//            // once SQS has message, trigger SNS service
-//            List<Message> messages = pollMessages();
-//            for (Message message: messages) {
-//                JSONObject jsonObject = new JSONObject(message.getBody());
-//                Map<String, Object> map = new ObjectMapper().readValue(message.getBody(), HashMap.class);
-//                logger.info("Successfully obtain message from AWS SQS...");
-//                logger.info("Message body: " + map.toString());
-//            }
-//        }
-//    }
 }

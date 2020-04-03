@@ -37,10 +37,11 @@ public class SQSServiceImpl implements SQSService {
 
     private Logger logger = LogManager.getLogger(getClass());
 
-    public void putMessage(String recordId, String ownerEmail) {
+    public void putMessage(String recordId, String ownerEmail, String numOfDays) {
         Map<String, Object> map = new HashMap<>();
         map.put("recordId", recordId);
         map.put("ownerEmail", ownerEmail);
+        map.put("numOfDays", numOfDays);
 
         AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
         SendMessageRequest send_msg_request = new SendMessageRequest()

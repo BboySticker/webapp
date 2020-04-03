@@ -4,6 +4,7 @@ package com.csye6225.webservice.RESTfulWebService.Controller;
 import com.csye6225.webservice.RESTfulWebService.Entity.Bill.Bill;
 import com.csye6225.webservice.RESTfulWebService.Entity.User.User;
 import com.csye6225.webservice.RESTfulWebService.Exception.BillNotFoundException;
+import com.csye6225.webservice.RESTfulWebService.Exception.UnauthorizedException;
 import com.csye6225.webservice.RESTfulWebService.Exception.UserNotFoundException;
 import com.csye6225.webservice.RESTfulWebService.Service.BillService;
 import com.csye6225.webservice.RESTfulWebService.Service.SQSService;
@@ -20,6 +21,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -64,6 +66,10 @@ public class TransactionController {
         List<Bill> dueBills = new ArrayList<>();
         for (String billId: dueBillsId) {
             dueBills.add(billService.findById(billId));
+        }
+        Bill firstBill = dueBills.get(0);
+        if (! getCurrentUser().getId().equals(firstBill.getOwnerId())) {
+            throw new UnauthorizedException("This user is unauthorized to access this resource!");
         }
         return dueBills;
     }

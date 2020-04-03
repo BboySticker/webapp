@@ -70,7 +70,6 @@ public class CustomizedResponseEntityExceptionHandler
         return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
-
     // handle the storage file not found
     @ExceptionHandler(StorageFileNotFoundException.class)
     public final ResponseEntity<Object> handleStorageFileNotFound(StorageFileNotFoundException ex, WebRequest request) {
@@ -78,7 +77,6 @@ public class CustomizedResponseEntityExceptionHandler
                 new ExceptionResponse(new Date(), "File Not Found!", request.getDescription(false));
         return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
     }
-
 
     // handle the attach file error
     @ExceptionHandler(AttachFileException.class)
@@ -102,6 +100,15 @@ public class CustomizedResponseEntityExceptionHandler
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(new Date(), "Attach Image Error!", request.getDescription(false));
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    // handle the unauthorized error
+    @ExceptionHandler(UnauthorizedException.class)
+    public final ResponseEntity<Object> handleAttachFileException(UnauthorizedException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse =
+                new ExceptionResponse(new Date(), "This user is unauthorized to access this resource!",
+                        request.getDescription(false));
+        return new ResponseEntity(exceptionResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @Override

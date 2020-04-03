@@ -37,6 +37,8 @@ public class ApplicationController {
 
     private Logger logger = LogManager.getLogger(getClass());
 
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     @Autowired
     private StatsDClient statsDClient;
 
@@ -106,7 +108,6 @@ public class ApplicationController {
         }
         // set user attributes
         user.setId(UUID.randomUUID().toString());  // user id
-        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");  // set the date format
         user.setAccount_created(dateFormat.format(new Date()));
 
         long startTime = System.currentTimeMillis();
